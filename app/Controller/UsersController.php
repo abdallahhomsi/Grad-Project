@@ -92,9 +92,7 @@ class UsersController extends AppController
                 'conditions' => ['group_id' => $temp]
             ]
         );
-		$tt = $this->User->findById($this->Session->read('User.id'));
         $this->set('posts', json_encode($posts));
-		$this->set('userInfo', json_encode($tt));
     }
     public function editUser($id = null)
     {

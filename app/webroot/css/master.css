@@ -271,3 +271,34 @@ body {
 	text-decoration: none;
 	color: black;
 }
+
+.login-landing {
+	width: 100%;
+	height: 100vh;
+}
+
+.login-landing .login-section {
+	width: 300px;
+	background-color: #eee;
+	height: 400px;
+	margin: auto;
+	text-align: center;
+	padding: 50px 20px;
+	position: relative;
+}
+
+.login-landing .login-section form {
+	width: 100%;
+}
+
+.login-landing .login-section form input:not([type='submit']) {}
+
+.login-landing .login-section form input {
+	outline: none;
+	margin-bottom: 30px;
+}
+
+.login-landing .login-section .error-message {
+	border: none;
+	margin-top: 50px;
+}

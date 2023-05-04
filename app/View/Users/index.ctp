@@ -2,21 +2,18 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Safe Community</title>
-    <link rel="stylesheet" href="css\all.min.css">
-    <link rel="stylesheet" href="css\master.css">
-    <link rel="stylesheet" href="css\normalize.css">
+ <link rel="stylesheet" href="/cakephp/css/master.css">
+<link rel="stylesheet" href="/cakephp/css/normalize.css">
+<link rel="stylesheet" href="/cakephp/css/all.min.css">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
-
-
 </head>
-
 <body>
     <div class="header">
         <div class="logo">
@@ -56,24 +53,16 @@
     </div>
 	<p></p>
 
-<?= $this->Html->script('/app/webroot/js/master.js') ?>
+<?= $this->Html->script('master.js') ?>
 <script>
-	let data = <?php echo $posts ?>;
-	let user  = <?php echo $userInfo?>;
-	user = JSON.stringify(user);
-	data  =JSON.stringify(data);
+	let data = JSON.stringify(<?php echo $posts?>);
 	data =JSON.parse(data);
 	for(let i=0; i<data.length;i++){
 		createPost(data[i]);
-		console.log(user);
 	}
 	</script>
 </body>
-
 </html>
-
-
-
-<?= $this->Html->css('/app/webroot/css/all.min.css') ?>
-	<?= $this->Html->css('/app/webroot/css/master.css') ?>
-<?= $this->Html->css('/app/webroot/css/normalize.css') ?>
+<?= $this->Html->css('all.min.css') ?>
+<?= $this->Html->css('master.css') ?>
+<?= $this->Html->css('normalize.css') ?>
