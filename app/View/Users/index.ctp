@@ -59,11 +59,13 @@
 <?= $this->Html->script('/app/webroot/js/master.js') ?>
 <script>
 	let data = <?php echo $posts ?>;
+	let user  = <?php echo $userInfo?>;
+	user = JSON.stringify(user);
 	data  =JSON.stringify(data);
 	data =JSON.parse(data);
 	for(let i=0; i<data.length;i++){
 		createPost(data[i]);
-		console.log(data[i].Post);
+		console.log(user);
 	}
 	</script>
 </body>
