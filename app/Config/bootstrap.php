@@ -110,3 +110,5 @@ CakeLog::config('error', array(
 	'file' => 'error',
 ));
 CakePlugin::load('DebugKit');
+Cache::clear(false, '_cake_core_');
+Cache::clear(false, '_cake_model_');

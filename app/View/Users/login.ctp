@@ -28,7 +28,6 @@
 
 <?= $this->Html->script('login.js') ?>
 <script>
-
 	</script>
 </body>
 </html>

@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Safe Community</title>
- <link rel="stylesheet" href="/cakephp/css/master.css">
+<link rel="stylesheet" href="/cakephp/css/master.css">
 <link rel="stylesheet" href="/cakephp/css/normalize.css">
 <link rel="stylesheet" href="/cakephp/css/all.min.css">
 
@@ -17,7 +17,7 @@
 <body>
     <div class="header">
         <div class="logo">
-            <img src="img/logo.png" alt="">
+            <img src="/img/logo.png" alt="logo">
             <h3>Safe Community</h3>
         </div>
         <div class="links">
@@ -26,6 +26,7 @@
                 <li><i class="fa-solid fa-book-open"></i>Books</li>
                 <li><i class="fa-solid fa-person-chalkboard"></i>Instructors</li>
                 <li><i class="fa-solid fa-calendar"></i>Events</li>
+                <li><i class="fa-solid fa-user"></i>Profile</li>
                 <li><i class="fa-solid fa-user"></i>Profile</li>
             </ul>
         </div>
@@ -43,6 +44,7 @@
             <li><a href="">BIT</a></li>
             <li><a href="">Artificial Intelligence</a></li>
             <li><a href="">Cyber Security</a></li>
+            <li><a href="" class="add-group">+ Add a group</a></li>
         </ul>
     </div>
     <div class="container">

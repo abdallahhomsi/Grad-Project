@@ -377,11 +377,11 @@ $prefix = 'myapp_';
  * object listings, and translation cache files are stored with this configuration.
  */
 Cache::config('_cake_core_', array(
-	'engine' => $engine,
+	'engine' => null,
 	'prefix' => $prefix . 'cake_core_',
-	'path' => CACHE . 'persistent' . DS,
-	'serialize' => ($engine === 'File'),
-	'duration' => $duration
+	// 'path' => CACHE . 'persistent' . DS,
+	// 'serialize' => ($engine === 'File'),
+	// 'duration' => $duration
 ));
 
 /**
@@ -389,9 +389,9 @@ Cache::config('_cake_core_', array(
  * is used to store schema descriptions, and table listings in connections.
  */
 Cache::config('_cake_model_', array(
-	'engine' => $engine,
+	'engine' => null,
 	'prefix' => $prefix . 'cake_model_',
-	'path' => CACHE . 'models' . DS,
-	'serialize' => ($engine === 'File'),
-	'duration' => $duration
+	// 'path' => CACHE . 'models' . DS,
+	// 'serialize' => ($engine === 'File'),
+	// 'duration' => $duration
 ));

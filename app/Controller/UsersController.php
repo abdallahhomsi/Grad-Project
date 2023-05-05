@@ -24,7 +24,7 @@ class UsersController extends AppController
             $this->Flash->error(__('Sorry something went wrong'));
         }
     }
-    public function add()
+    public function register()
     {
         $this->loadModel('Group');
         $this->loadModel('Role');

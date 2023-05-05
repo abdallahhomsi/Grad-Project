@@ -3,14 +3,16 @@ let ok = false;
 let count = 0;
 document.querySelectorAll('.login-landing .login-section form input').forEach((el) => {
 	el.addEventListener('blur', (e) => {
-		if (e.target.type === 'email')
+		if (e.target.type === 'email') {
 			if (/[\s+<+>+&+\*+]/gi.test(e.target.value) && count === 0) {
 				count++;
 				createError(e, `Do not use * , & , | , or space`);
+				ok = false;
 			}
-			else {
+			else
 				ok = true;
-			}
+		}
+
 	});
 	el.addEventListener('click', (e) => {
 		if (e.target.type === 'submit') {
@@ -19,6 +21,10 @@ document.querySelectorAll('.login-landing .login-section form input').forEach((e
 			if ((fields[0].value === '' || fields[1].value === '') && count === 0) {
 				count++;
 				createError(e, `Fill All Fields`);
+				ok = false;
+			}
+			else if (ok) {
+
 			}
 		}
 	});
@@ -34,3 +40,12 @@ function createError(e, message) {
 		count = 0;
 	}, 3000);
 }
+
+
+
+
+
+
+
+
+

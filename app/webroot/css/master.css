@@ -272,6 +272,15 @@ body {
 	color: black;
 }
 
+.header .groups-list li a.add-group {
+	justify-content: center;
+	display: flex;
+	color: var(--mainColor);
+	font-weight: 800;
+}
+
+
+
 .login-landing {
 	width: 100%;
 	height: 100vh;
