@@ -59,7 +59,7 @@
 <body>
 <div class="landing-register">
 	<div class="register-section">
-		<form action="" method="post">
+		<form action="" method="post" id="my-form">
 			<div><input type="text" name="first_name" id="fname" placeholder="First Name" required></div>
 			<div><input type="text" name="family_name" id="lname" placeholder="Last Name" required></div>
 			<div><input type="text" name="username" id="username" placeholder="username" required></div>
@@ -78,10 +78,14 @@
 	let groupNames= <?php echo $group_options?>;
 	let groups = [];
 	let values=[];
-	let obj = { name: "John", age: 30, city: "New York" };
+	let firstTime = true;
 for (let prop in groupNames) {
+	if(firstTime)
+	firstTime=false;
+	else{
 	values.push(prop)
 	groups.push(groupNames[`${prop}`]);
+	}
 }
 	document.querySelectorAll('.landing-register .register-section form input').forEach((el)=>{
 	el.addEventListener('focus',(e)=>{
@@ -160,22 +164,17 @@ for (let prop in groupNames) {
 				let req=new XMLHttpRequest();
 				req.open("POST", "/cakephp/users/register");
 				req.setRequestHeader("Content-Type", "application/json");
-
-// Define the function to handle the response from the server
 	req.onreadystatechange = function() {
 	if (req.readyState === 4) {
 		if (req.status === 200) {
-		// Handle the successful response from the server
 		console.log(req.responseText);
 		} else {
-		// Handle the error response from the server
 		console.error("Error:", req.status);
 		}
 	}
 	};
-// Send the request with the data
 req.send(data);
-		// window.location.href = '/cakephp/users/login';
+		window.location.href = '/cakephp/users/login';
 			}
 		}
 	})

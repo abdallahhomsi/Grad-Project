@@ -32,12 +32,17 @@ class UsersController extends AppController
 		if ($this->request->is('post')) {
 			$this->autoRender = false;
 			$data = json_decode(file_get_contents('php://input'), true);
+
 			$temp = [
 				'username' => $data['username'],
-				'password' => $data['password'],
 				'email' => $data['email'],
-				'role_id' => $data['role_id']
+				'password' => $data['password'],
+				'role_id' => $data['role_id'],
+				'group_id' => 11
 			];
+
+			// pr($temp);
+			// $this->User->create();
 			if ($this->User->save($temp)) {
 				$id = $this->User->find('first', ['recursive' => -1, 'fields' => ['id'], 'conditions' => ['email' => $data['email']]]);
 				foreach ($data['groups'] as $lo):
@@ -45,19 +50,14 @@ class UsersController extends AppController
 					$this->UserRole->create();
 					$this->UserRole->save($temp2);
 				endforeach;
-				// $this->Flash->success(__('The user has been saved'));
-				$this->Session->write('User.id', $id['User']['id']);
-				// return $this->redirect(['action' => 'index']);
+				// $this->Session->write('User.id', $id['User']['id']);
 			}
-			// $this->Flash->error(__('sorry something went wrong'));
-			echo json_encode($data);
 		} else {
 			$group_options = $this->Group->find('list', [
 				'recursive' => -1,
 				'fields' => ['Group.id', 'Group.name'],
-				'limit' => 6
+				'limit' => 7
 			]);
-
 			$this->set('group_options', json_encode($group_options));
 		}
 	}
