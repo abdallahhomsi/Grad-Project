@@ -1,3 +1,4 @@
+
 <!Dctype HTML>
 <html>
 <meta charset="UTF-8">
@@ -59,8 +60,8 @@
 <div class="landing-register">
 	<div class="register-section">
 		<form action="" method="post">
-			<div><input type="text" name="fname" id="fname" placeholder="First Name" required></div>
-			<div><input type="text" name="lname" id="lname" placeholder="Last Name" required></div>
+			<div><input type="text" name="first_name" id="fname" placeholder="First Name" required></div>
+			<div><input type="text" name="family_name" id="lname" placeholder="Last Name" required></div>
 			<div><input type="text" name="username" id="username" placeholder="username" required></div>
 			<div><input type="email" name="email" id="email" placeholder="Email" required></div>
 			<div><input type="password" name="password" id="password" placeholder="Password" required></div>
@@ -71,7 +72,18 @@
 <script>
 	let groupsShown = false;
 	let chooseGroupError=false;
-document.querySelectorAll('.landing-register .register-section form input').forEach((el)=>{
+	let role;
+	let userData = new Object();
+	let groupsChecked = [];
+	let groupNames= <?php echo $group_options?>;
+	let groups = [];
+	let values=[];
+	let obj = { name: "John", age: 30, city: "New York" };
+for (let prop in groupNames) {
+	values.push(prop)
+	groups.push(groupNames[`${prop}`]);
+}
+	document.querySelectorAll('.landing-register .register-section form input').forEach((el)=>{
 	el.addEventListener('focus',(e)=>{
 		let hasError = e.target.parentElement.querySelector('span');
 		if(hasError)
@@ -79,23 +91,23 @@ document.querySelectorAll('.landing-register .register-section form input').forE
 	})
 	el.addEventListener('blur',(e)=>{
 		if(e.target.type==='email'){
-			let pattern1 = /\w+@std.hu.edu.jo/g;
-			let pattern2 = /\w+@staff.hu.edu.jo/g;
+			let pattern1 = /\d{5}@std.hu.edu.jo/g;
+			let pattern2 = /\d{5}@staff.hu.edu.jo/g;
 			if(pattern1.test(e.target.value)){
 			chooseGroup();
+			role=1;
 			}else if(pattern2.test(e.target.value)){
 				removeGroups();
+				role=2;
 			}else{
 				createError(e.target.parentElement,'HU domain!');
 			}
 		}
 		else if(e.target.type==='password'){
 			let pattern =/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,}$/;
-			if(pattern.test(e.target.value)){
-			//DATABASE
-			}
-			else
+			if(!pattern.test(e.target.value)){
 			createError(e.target.parentElement,'not valid');
+			}
 		}
 		else if(e.target.id==='username'){
 			let pattern = /\s+/g;
@@ -127,6 +139,43 @@ document.querySelectorAll('.landing-register .register-section form input').forE
 			else if(!empty){
 				removecheckboxError();
 				//DATABASE
+				document.querySelectorAll('.landing-register .register-section form input:not([type="submit"])').forEach((el)=>{
+					if(el.type==='checkbox'){
+						if(el.checked)
+						groupsChecked.push(el.value);
+					}
+					else{
+						let attributeName = el.name;
+						userData[`${attributeName}`]=el.value;
+					}
+				})
+				userData['role_id']=role;
+				if(groupsChecked.length!==0)
+				userData.groups = groupsChecked;
+				else{
+				userData.groups = values;
+				}
+
+				let data = JSON.stringify(userData);
+				let req=new XMLHttpRequest();
+				req.open("POST", "/cakephp/users/register");
+				req.setRequestHeader("Content-Type", "application/json");
+
+// Define the function to handle the response from the server
+	req.onreadystatechange = function() {
+	if (req.readyState === 4) {
+		if (req.status === 200) {
+		// Handle the successful response from the server
+		console.log(req.responseText);
+		} else {
+		// Handle the error response from the server
+		console.error("Error:", req.status);
+		}
+	}
+	};
+// Send the request with the data
+req.send(data);
+		// window.location.href = '/cakephp/users/login';
 			}
 		}
 	})
@@ -134,12 +183,10 @@ document.querySelectorAll('.landing-register .register-section form input').forE
 function createCheckBox(index){
 	let myLabel =document.createElement('label');
 	let myInput =document.createElement('input');
-	let group = ['Computer Science','Software Enginnering','CIS','BIT','AI','Cyber Security'];
-	let values=['cs','sw','cis','bit','ai','cys'];
 	myInput.type='checkbox';
 	myInput.value=values[index];
 	myLabel.append(myInput);
-	myLabel.append(group[index]);
+	myLabel.append(groups[index]);
 	document.querySelector('.landing-register .register-section form input[type="submit"]').before(myLabel);
 }
 function chooseGroup(){
@@ -180,7 +227,7 @@ function createError(element,message){
 }
 function checkboxError(){
 	if(!chooseGroupError){
-	checkboxError=true;
+	chooseGroupError=true;
 	let myP =document.createElement('p');
 	myP.classList.add('checkbox-error');
 	myP.append('Please choose at least one group');
