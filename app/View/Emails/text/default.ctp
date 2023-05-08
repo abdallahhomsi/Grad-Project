@@ -14,4 +14,4 @@
  * @license       https://opensource.org/licenses/mit-license.php MIT License
  */
 ?>
-<?php echo $content; ?>
+<!-- <?php echo $content; ?> -->

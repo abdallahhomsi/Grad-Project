@@ -79,6 +79,7 @@
 	let groups = [];
 	let values=[];
 	let firstTime = true;
+	let userFound;
 for (let prop in groupNames) {
 	if(firstTime)
 	firstTime=false;
@@ -167,14 +168,22 @@ for (let prop in groupNames) {
 	req.onreadystatechange = function() {
 	if (req.readyState === 4) {
 		if (req.status === 200) {
-		console.log(req.responseText);
+		userFound=req.responseText;
+			if(userFound==='1'){
+		window.location.href = '/cakephp/users/login';
+		}
+		else{
+			let el =document.querySelector('#username');
+			createError(el,'username exist');
+			alert('Error ');
+		}
+				console.log(userFound);
 		} else {
 		console.error("Error:", req.status);
 		}
 	}
 	};
 req.send(data);
-		window.location.href = '/cakephp/users/login';
 			}
 		}
 	})

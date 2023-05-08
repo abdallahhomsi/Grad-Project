@@ -8,20 +8,21 @@ class UsersController extends AppController
 	public function login()
 	{
 		if ($this->request->is('post')) {
+			$this->autoRender = false;
+			$data = json_decode(file_get_contents('php://input'), true);
 			$check = $this->User->find('all', [
 				'recursive' => -1,
-				'fields' => ['email', 'password', 'id'],
-				'conditions' => ['email' => $this->request->data['User']['email']]
+				'fields' => ['username', 'password', 'id'],
+				'conditions' => ['username' => $data['username']]
 			]);
 			if (
-				$this->request->data['User']['email'] === $check[0]['User']['email']
-				&& $this->request->data['User']['password'] === $check[0]['User']['password']
+				$data['username'] === $check[0]['User']['username']
+				&& $data['password'] === $check[0]['User']['password']
 			) {
-				$this->Flash->success(__('Welcome to Safe Community'));
 				$this->Session->write('User.id', $check[0]['User']['id']);
-				return $this->redirect(['action' => 'index']);
+				$check = 1;
 			}
-			$this->Flash->error(__('Sorry something went wrong'));
+			echo json_encode($check);
 		}
 	}
 	public function register()
@@ -32,26 +33,32 @@ class UsersController extends AppController
 		if ($this->request->is('post')) {
 			$this->autoRender = false;
 			$data = json_decode(file_get_contents('php://input'), true);
-
 			$temp = [
 				'username' => $data['username'],
 				'email' => $data['email'],
 				'password' => $data['password'],
 				'role_id' => $data['role_id'],
-				'group_id' => 11
+				'group_id' => 11,
+				'first_name' => $data['first_name'],
+				'family_name' => $data['family_name']
 			];
-
-			// pr($temp);
-			// $this->User->create();
-			if ($this->User->save($temp)) {
-				$id = $this->User->find('first', ['recursive' => -1, 'fields' => ['id'], 'conditions' => ['email' => $data['email']]]);
-				foreach ($data['groups'] as $lo):
-					$temp2 = ['user_id' => $id['User']['id'], 'group_id' => $lo, 'role_id' => $data['role_id']];
-					$this->UserRole->create();
-					$this->UserRole->save($temp2);
-				endforeach;
-				// $this->Session->write('User.id', $id['User']['id']);
+			$check = $this->User->find('first', [
+				'recursive' => -1,
+				'fields' => ['username'],
+				'conditions' => ['username' => $temp['username']]
+			]);
+			if (empty($check)) {
+				$check = 1;
+				if ($this->User->save($temp)) {
+					$id = $this->User->find('first', ['recursive' => -1, 'fields' => ['id'], 'conditions' => ['email' => $data['email']]]);
+					foreach ($data['groups'] as $lo):
+						$temp2 = ['user_id' => $id['User']['id'], 'group_id' => $lo, 'role_id' => $data['role_id']];
+						$this->UserRole->create();
+						$this->UserRole->save($temp2);
+					endforeach;
+				}
 			}
+			echo json_encode($check);
 		} else {
 			$group_options = $this->Group->find('list', [
 				'recursive' => -1,
@@ -61,35 +68,7 @@ class UsersController extends AppController
 			$this->set('group_options', json_encode($group_options));
 		}
 	}
-	public function index()
-	{
-		$this->loadModel('Post');
-		$this->loadModel('UserRole');
-		$this->loadModel('User');
 
-		$id = 60;
-		$groups_id = $this->UserRole->find(
-			'all',
-			[
-				'recursive' => -1,
-				'fields' => ['group_id'],
-				'conditions' => ['user_id' => $id]
-			]
-		);
-		$temp = [];
-		foreach ($groups_id as $gi):
-			array_push($temp, $gi['UserRole']['group_id']);
-		endforeach;
-		$posts = $this->Post->find(
-			'all',
-			[
-				'recursive' => -1,
-				'fields' => ['title', 'Post.body', 'Post.id', 'Post.likes'],
-				'conditions' => ['group_id' => $temp]
-			]
-		);
-		$this->set('posts', json_encode($posts));
-	}
 	public function editUser($id = null)
 	{
 		if (empty($id)) {
