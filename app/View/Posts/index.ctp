@@ -308,11 +308,12 @@
 	.popup-overlay .popup-content {
 		background-color: white;
 		width: 650px;
-		height: 450px;
+		height: 492px;
 		position: absolute;
 		left: 50%;
 		top: 50%;
 		transform: translate(-50%, -50%);
+		border-radius: 10px;
 	}
 
 	.popup-overlay .popup-content form {
@@ -325,10 +326,8 @@
 	}
 
 	.popup-overlay .popup-content form input:not([type="checkbox"]):not([type="submit"]) {
-		margin: 20px 0;
 		display: block;
 	}
-
 	.popup-overlay .popup-content form textarea {
 		width: 100%;
 		height: 245px;
@@ -347,6 +346,7 @@
 		padding: 5px;
 		border: 1px solid #333;
 		border-radius: 5px;
+		margin: 15px 0px;
 	}
 
 	.popup-overlay .popup-content form input[type="submit"] {
@@ -358,6 +358,9 @@
 		border-radius: 4px;
 		float: right;
 		border: none;
+	}
+	.popup-overlay .popup-content form input[type="file"]{
+		margin:10px 0px;
 	}
 
 	.popup-overlay .popup-content form p {
@@ -393,7 +396,7 @@ position: absolute;
 <body>
 	<div class="header">
 		<div class="logo">
-			<img src="/img/logo.png" alt="logo">
+			<img src="/cakephp/app/webroot/img/logo.png" alt="logo">
 			<h3>Safe Community</h3>
 		</div>
 		<div class="links">
@@ -425,12 +428,13 @@ position: absolute;
 	</div>
 	<div class="popup-overlay">
 		<div class="popup-content">
-			<form action="">
+			<form enctype="multipart/form-data">
 				<input type="text" name="title" id="title" placeholder="Title" required>
 				<textarea class="content" name="content" placeholder="Content"></textarea>
+				<label for="pic_path">Upload Photo:</label>
+				<input type="file" accept="image/jpg,image/png,image/jpeg" name="pic_path" id="pic_path" value='Upload Photo'>
 				<p>Choose a Group:</p>
 				<select name="groups-selected" id="groups-selected">
-
 				</select>
 				<input type="submit" value="Post">
 			</form>
@@ -446,9 +450,12 @@ position: absolute;
 		let postLikeClass = "fa-solid fa-heart";
 		let postCommentClass = "fa-solid fa-comment";
 		let postShareClass = "fa-solid fa-share";
-		let postData = <?php echo $posts ?>;
+		let postData = <?php echo $posts; ?>;
 		let userGroups = <?php echo $groups; ?>;
 		let postErrorCount = 0;
+
+		console.log(postData);
+		console.log(userGroups);
 
 		function createPost(userData) {
 			let container = document.createElement('div');
@@ -559,10 +566,9 @@ position: absolute;
 		// ### Deal with user ###
 
 		//Generate Posts:
-		console.log(postData);
-		for (let i = 0; i < postData.length; i++) {
-			createPost(postData[i]);
-		}
+		// for (let i = 0; i < postData.length; i++) {
+		// 	createPost(postData[i]);
+		// }
 		//Generte Groups:
 		generateGroups(userGroups);
 
@@ -575,7 +581,7 @@ position: absolute;
 			});
 		});
 
-		//Create post by user:
+		//$$$$$$$$$$$$$$$$$          Create post by user:       $$$$$$$$$$$$$$$$$$$$$$$$$$
 		document.querySelector('.create-post .post-button').addEventListener('click', (e) => {
 			publishPost();
 
@@ -589,15 +595,16 @@ position: absolute;
 			document.querySelectorAll('.popup-overlay .popup-content form select option').forEach(el=>{
 				el.remove();
 			})
-		}
+		};
 
 		document.querySelector('.popup-overlay .popup-content form input[type="submit"]').addEventListener('click',(e)=>{
 			e.preventDefault();
-			let lastPostData = new Object();
-			lastPostData.title= e.currentTarget.parentElement.querySelector('input[type="text"]').value;
-			lastPostData.body= e.currentTarget.parentElement.querySelector('.content').value;
-			lastPostData.group_id =   e.currentTarget.parentElement.querySelector('select').value;
-			if(lastPostData.title === '' || lastPostData.body === '' || lastPostData.group_id==='' && postErrorCount===0){
+				const form = document.querySelector('.popup-overlay .popup-content form ');
+				const title = form.querySelector('input[type="text"]').value;
+				const content = form.querySelector('textarea').value;
+				const fileInput = form.querySelector('input[type="file"]');
+				const group_id =form.querySelector('select').value;
+			if(title === '' || content === '' || group_id==='' && postErrorCount===0){
 				let errorDiv =document.createElement('div');
 				errorDiv.classList.add('required');
 				errorDiv.append('Must Fill All Fields !')
@@ -607,10 +614,26 @@ position: absolute;
 			else{
 				postErrorCount=0;
 				//DATABASE
-				let data = JSON.stringify(lastPostData);
-				console.log(data);
+				// Create a FormData object and append the input values
+				const formData = new FormData();
+				formData.append('title', title);
+				formData.append('content', content);
+				formData.append('group_id', group_id);
+				formData.append('file', fileInput.files[0]);
+				// Send the form data using XMLHttpRequest
+				const xhr = new XMLHttpRequest();
+				xhr.open('POST', '/cakephp/Posts/add');
+				xhr.onreadystatechange = function() {
+				if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+					console.log('Response received:', xhr.responseText);
+					window.location.href = '/cakephp/Posts/index';
+				}
 			}
-		})
+			xhr.send(formData);
+		}
+		});
+///////////////////////////////////////////////////////////////////////////////
+
 
 		//Show groups when clicking on it
 		document.querySelector(".header .open-menu").addEventListener('click', (e) => {

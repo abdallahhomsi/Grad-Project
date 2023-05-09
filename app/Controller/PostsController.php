@@ -28,20 +28,37 @@ class PostsController extends AppController
 			'fields' => ['name'],
 			'conditions' => ['id' => $temp]
 		]);
-		foreach ($groups_id as $gi):
-			array_push($temp, $gi['UserRole']['group_id']);
-		endforeach;
 		$posts = $this->Post->find(
 			'all',
 			[
 				'recursive' => -1,
-				'fields' => ['title', 'Post.body', 'Post.id', 'Post.likes'],
-				'conditions' => ['group_id' => $temp]
+				'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.username', 'User.id', 'User.role_id', 'Group.name'],
+				'conditions' => ['Post.group_id' => $temp],
+				'joins' => [
+					[
+						'table' => 'users',
+						'alias' => 'User',
+						'type' => 'inner',
+						'conditions' => ['Post.user_id = User.id']
+					],
+					[
+						'table' => 'groups',
+						'alias' => 'Group',
+						'type' => 'inner',
+						'conditions' => ['Post.group_id = Group.id']
+					]
+				]
 			]
 		);
-		$this->set('posts', json_encode($posts));
-		$this->set('groups', json_encode($group_name));
+		$currentRole = $this->User->find('all', [
+			'recursive' => -1,
+			'fields' => ['role_id'],
+			'conditions' => ['id' => $this->Session->read('User.id')]
+		]);
 
+		$this->set('posts', json_encode($posts));
+		$this->set('posts', json_encode($currentRole));
+		$this->set('groups', json_encode($group_name));
 	}
 	public function view($id = null)
 	{
@@ -126,21 +143,52 @@ class PostsController extends AppController
 			}
 		}
 	}
+
 	public function add()
 	{
 		$this->loadModel('Group');
 		$this->loadModel('UserRole');
 		if ($this->request->is('post')) {
-			$this->Post->create();
-			$this->request->data['Post']['user_id'] = $this->Session->read('User.id');
-			if ($this->Post->save($this->request->data)) {
-				$this->Flash->success(__('Your post has been saved.'));
-				return $this->redirect(array('controller' => 'users', 'action' => 'index'));
+			$this->autoRender = false;
+			$data = $this->request->data;
+			if (!empty($_FILES)) {
+				$file = $_FILES['file'];
+				$allowedTypes = array('jpg', 'jpeg', 'png', 'gif');
+				$allowedSize = 1024 * 1024; // 1 MB
+				if (!in_array(pathinfo($file['name'], PATHINFO_EXTENSION), $allowedTypes)) {
+					$this->Flash->error(__('Invalid file type.'));
+				} elseif ($file['size'] > $allowedSize || $file['size'] == 0) {
+					$this->Flash->error(__('File size exceeds limit.'));
+				} else {
+					$temp = [
+						'title' => $data['title'],
+						'body' => $data['content'],
+						'pic_path' => $file['name'],
+						'likes' => 0,
+						'user_id' => $this->Session->read('User.id'),
+						'group_id' => $data['group_id']
+					];
+				}
+				move_uploaded_file($file['tmp_name'], WWW_ROOT . 'img/' . $file['name']);
+			} else {
+				$temp = [
+					'title' => $data['title'],
+					'body' => $data['content'],
+					'likes' => 0,
+					'user_id' => $this->Session->read('User.id'),
+					'group_id' => $data['group_id']
+				];
 			}
-			$this->Flash->error(__('Unable to add your post.'));
+			$this->Post->create();
+			$this->Post->save($temp);
+			echo json_encode($temp);
+
 		} else {
 			$this->loadModel('Group');
-			$group_options = $this->Group->get_data();
+			$group_options = $this->Group->find('all', [
+				'recursive' => -1,
+				'fields' => ['id', 'name']
+			]);
 			$id = $this->Session->read('User.id');
 			$groups_id = $this->UserRole->find(
 				'list',
@@ -156,10 +204,12 @@ class PostsController extends AppController
 					$final[$key] = $value;
 				}
 			}
-
 			$this->set('group_info', $final);
 		}
 	}
+
+
+
 	public function edit($id = null)
 	{
 		if (!$id) {
