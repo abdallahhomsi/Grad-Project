@@ -6,6 +6,7 @@ class PostsController extends AppController
 	public function index()
 	{
 		$this->loadModel('Post');
+		$this->loadModel('PostCounter');
 		$this->loadModel('UserRole');
 		$this->loadModel('User');
 		$this->loadModel('Group');
@@ -32,8 +33,9 @@ class PostsController extends AppController
 			'all',
 			[
 				'recursive' => -1,
-				'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.username', 'User.id', 'User.role_id', 'Group.name'],
+				'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.username', 'User.role_id', 'Group.name', 'PostCounter.id'],
 				'conditions' => ['Post.group_id' => $temp],
+				'order' => 'Post.id DESC',
 				'joins' => [
 					[
 						'table' => 'users',
@@ -46,6 +48,12 @@ class PostsController extends AppController
 						'alias' => 'Group',
 						'type' => 'inner',
 						'conditions' => ['Post.group_id = Group.id']
+					],
+					[
+						'table' => 'post_counters',
+						'alias' => 'PostCounter',
+						'type' => 'left',
+						'conditions' => array('Post.id = PostCounter.post_id', 'PostCounter.user_id' => $this->Session->read('User.id'))
 					]
 				]
 			]
@@ -55,11 +63,43 @@ class PostsController extends AppController
 			'fields' => ['role_id'],
 			'conditions' => ['id' => $this->Session->read('User.id')]
 		]);
-
 		$this->set('posts', json_encode($posts));
-		$this->set('posts', json_encode($currentRole));
+		$this->set('userRole', json_encode($currentRole));
 		$this->set('groups', json_encode($group_name));
 	}
+	public function like()
+	{
+		$this->loadModel('PostCounter');
+		$this->autoRender = false;
+		$data = json_decode(file_get_contents('php://input'), true);
+		$like = $data['liked'];
+		$post_id = $data['id'];
+		if ($like == 1) {
+			$post = $this->Post->findById($post_id);
+			$post['Post']['likes']++;
+			$this->Post->updateAll(
+				['likes' => $post['Post']['likes']],
+				['id' => $post_id]
+			);
+			$this->PostCounter->create();
+			$this->PostCounter->save(['user_id' => $this->Session->read('User.id'), 'post_id' => $post_id]);
+		} else {
+			$post = $this->Post->findById($post_id);
+			$post['Post']['likes']--;
+			$this->Post->updateAll(
+				['likes' => $post['Post']['likes']],
+				['id' => $post_id]
+			);
+			$like_id = $this->PostCounter->find('first', [
+				'recursive' => -1,
+				'fields' => ['id'],
+				'conditions' => ['user_id' => $this->Session->read('User.id'), 'post_id' => $post_id]
+			]);
+			$this->PostCounter->delete($like_id['PostCounter']['id']);
+		}
+		echo json_encode($post['Post']['likes']);
+	}
+
 	public function view($id = null)
 	{
 		if (!$id) {

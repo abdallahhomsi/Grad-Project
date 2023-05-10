@@ -33,6 +33,7 @@ class UsersController extends AppController
 		if ($this->request->is('post')) {
 			$this->autoRender = false;
 			$data = json_decode(file_get_contents('php://input'), true);
+
 			$temp = [
 				'username' => $data['username'],
 				'email' => $data['email'],
@@ -40,7 +41,7 @@ class UsersController extends AppController
 				'role_id' => $data['role_id'],
 				'group_id' => 11,
 				'first_name' => $data['first_name'],
-				'family_name' => $data['family_name']
+				'family_name' => $data['family_name'],
 			];
 			$check = $this->User->find('first', [
 				'recursive' => -1,

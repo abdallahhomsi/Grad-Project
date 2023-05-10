@@ -173,8 +173,12 @@
 
 	.profile-data h6 {
 		display: inline-block;
-		color: #777;
-		font-weight: normal;
+    color: #777;
+    font-weight: 600;
+    background-color: white;
+    border-radius: 7px;
+    padding: 2px;
+	margin-left: 1px;
 	}
 
 	.post-data {
@@ -191,8 +195,17 @@
 	.post-data .title {
 		font-weight: 600;
 	}
+	.post-data .title::selection{
+		color: var(--mainColor);
+	}
 
-	.post-buttons {
+	.post-data .post-image{
+		height: 400px;
+		width: 100%;
+		margin-top: 20px;
+	}
+
+	.post .post-buttons {
 		display: flex;
 		justify-content: space-evenly;
 		border-top-style: solid;
@@ -201,7 +214,8 @@
 		padding: 10px 0px;
 	}
 
-	.post-buttons div {
+	.post .post-buttons div.like,
+	.post .post-buttons div.comment{
 		margin-left: 10px;
 		cursor: pointer;
 		font-size: 15px;
@@ -209,19 +223,21 @@
 		padding: 5px;
 	}
 
-	.post-buttons div::before {
-		content: "";
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		left: 0;
-		top: 0;
+	.post .post-buttons div::before{
+	content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    background-color: var(--mainColor);
+    opacity: 0.2;
+    border-radius: 7px;
+    top: 0;
+	display: none;
 	}
 
-	.post-buttons div:hover::before {
-		background-color: var(--mainColor);
-		opacity: 0.1;
-		border-radius: 10px;
+	.post .post-buttons div:hover::before {
+		display: block;
 	}
 
 	.post-buttons div i {
@@ -231,7 +247,9 @@
 	.post-buttons div.like.active {
 		color: var(--mainColor);
 	}
-
+	.post .post-buttons div.like .likes-number{
+		margin-left: 5px;
+	}
 	.groups {
 		float: left;
 		width: 300px;
@@ -303,6 +321,7 @@
 		top: 0;
 		left: 0;
 		display: none;
+		z-index: 100;
 	}
 
 	.popup-overlay .popup-content {
@@ -449,15 +468,12 @@ position: absolute;
 		let postOptionClass = "fa-solid fa-ellipsis";
 		let postLikeClass = "fa-solid fa-heart";
 		let postCommentClass = "fa-solid fa-comment";
-		let postShareClass = "fa-solid fa-share";
 		let postData = <?php echo $posts; ?>;
 		let userGroups = <?php echo $groups; ?>;
+		let userRole = <?php echo $userRole; ?>;
 		let postErrorCount = 0;
 
-		console.log(postData);
-		console.log(userGroups);
-
-		function createPost(userData) {
+		function createPost(userData,role) {
 			let container = document.createElement('div');
 			let mainDiv = document.createElement('div');
 			let option = document.createElement('div');
@@ -465,54 +481,72 @@ position: absolute;
 			let profileImage = document.createElement('img');
 			let profileName = document.createElement('h4');
 			let profileRole = document.createElement('h6');
+			let groupName = document.createElement('h6');
 			let PostData = document.createElement('div');
 			let postButtons = document.createElement('div');
 			let like = document.createElement('div');
 			let comment = document.createElement('div');
-			let share = document.createElement('div');
+			let likesNumber = document.createElement('span');
 			mainDiv.classList.add('post');
 			mainDiv.dataset.postid = userData.Post["id"];
+			mainDiv.dataset.userid = userData.User["id"];
 			option.classList.add('option');
 			let optionIcon = document.createElement('i');
 			optionIcon.classList.add(...postOptionClass.split(' '));
 			option.append(optionIcon);
 
 			profileData.classList.add('profile-data');
-			profileImage.src = ' ';
+			profileImage.src = ``;
 			profileImage.alt = "User";
-			profileName.append(userData.Post["id"]);
-			profileRole.append(userData.Post["id"]);
+			profileName.append(userData.User["username"]);
+			groupName.append(userData.Group.name);
+			if(userData.User.role_id==='1')
+			profileRole.append("Student");
+			else
+			profileRole.append("Staff");
 			PostData.classList.add('post-data');
 
 			postButtons.classList.add('post-buttons');
 			like.classList.add('like');
 			let likeIcon = document.createElement('i');
 			likeIcon.classList.add(...postLikeClass.split(' '));
+
+
+
+			if(userData.PostCounter.id!==null)
+			like.classList.add('active');
+
 			like.append(likeIcon);
 			like.append("Like");
+			likesNumber.classList.add("likes-number");
+			likesNumber.append(`(${userData.Post.likes})`);
+			like.append(likesNumber);
 			comment.classList.add('comment');
 			let commentIcon = document.createElement('i');
 			commentIcon.classList.add(...postCommentClass.split(' '));
 			comment.append(commentIcon);
 			comment.append("Comment");
-			share.classList.add('share');
-			let shareIcon = document.createElement('i');
-			shareIcon.classList.add(...postShareClass.split(' '));
-			share.append(shareIcon);
-			share.append("Share");
+
+
 			postButtons.append(like);
 			postButtons.append(comment);
-			postButtons.append(share);
 
 			profileData.appendChild(profileImage);
 			profileData.append(profileName);
 			profileData.append(profileRole);
+			profileData.append(groupName);
 
 			let title = document.createElement('p');
 			title.className = 'title';
 			title.append(userData.Post['title']);
 			PostData.append(title);
 			PostData.append(userData.Post["body"]);
+			if(userData.Post.pic_path!==null){
+				let myImage =document.createElement('img');
+				myImage.src = `/cakephp/app/webroot/img/${userData.Post.pic_path}`;
+				myImage.classList.add('post-image');
+				PostData.append(myImage);
+			}
 
 			mainDiv.append(option);
 			mainDiv.append(profileData);
@@ -566,17 +600,41 @@ position: absolute;
 		// ### Deal with user ###
 
 		//Generate Posts:
-		// for (let i = 0; i < postData.length; i++) {
-		// 	createPost(postData[i]);
-		// }
+		for (let i = 0; i < postData.length; i++) {
+			createPost(postData[i],userRole[0].User.role_id);
+		}
 		//Generte Groups:
 		generateGroups(userGroups);
 
 		//Handle post buttons:
 		document.querySelectorAll('.post').forEach(el => {
 			el.addEventListener('click', (e) => {
+				let isLiked;
 				if (e.target.classList.contains('like')) {
-
+					if(e.target.classList.contains('active')){
+					isLiked=0;
+					}
+					else{
+					isLiked=1;
+					}
+					let obj = new Object();
+					e.target.classList.toggle('active');
+					obj.liked = isLiked;
+					obj.id=e.currentTarget.dataset.postid;
+					console.log(JSON.stringify(obj));
+					let xhr = new XMLHttpRequest();
+					xhr.open("POST","/cakephp/Posts/like");
+					xhr.onreadystatechange =function(){
+						if(this.readyState===4 && this.status===200){
+							let newNumber = this.responseText;
+							e.target.querySelector('.likes-number').textContent =`(${newNumber})`;
+							console.log(this.responseText);
+						}
+						else{
+							console.error(this.status);
+						}
+					}
+					xhr.send(JSON.stringify(obj));
 				}
 			});
 		});

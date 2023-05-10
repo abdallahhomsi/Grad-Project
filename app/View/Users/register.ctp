@@ -97,7 +97,7 @@ for (let prop in groupNames) {
 	el.addEventListener('blur',(e)=>{
 		if(e.target.type==='email'){
 			let pattern1 = /\d{5}@std.hu.edu.jo/g;
-			let pattern2 = /\d{5}@staff.hu.edu.jo/g;
+			let pattern2 = /\w+@staff.hu.edu.jo/g;
 			if(pattern1.test(e.target.value)){
 			chooseGroup();
 			role=1;
@@ -169,7 +169,7 @@ for (let prop in groupNames) {
 	if (req.readyState === 4) {
 		if (req.status === 200) {
 		userFound=req.responseText;
-			if(userFound==='1'){
+			if(userFound==="1"){
 		window.location.href = '/cakephp/users/login';
 		}
 		else{
@@ -177,7 +177,6 @@ for (let prop in groupNames) {
 			createError(el,'username exist');
 			alert('Error ');
 		}
-				console.log(userFound);
 		} else {
 		console.error("Error:", req.status);
 		}
@@ -250,6 +249,4 @@ function removecheckboxError(){
 }
 </script>
 </html>
-<?= $this->Html->css('all.min.css') ?>
-<?= $this->Html->css('master.css') ?>
-<?= $this->Html->css('normalize.css') ?>
+
