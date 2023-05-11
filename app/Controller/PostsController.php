@@ -33,7 +33,7 @@ class PostsController extends AppController
 			'all',
 			[
 				'recursive' => -1,
-				'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.username', 'User.role_id', 'Group.name', 'PostCounter.id'],
+				'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.id', 'User.username', 'User.role_id', 'Group.name', 'PostCounter.id'],
 				'conditions' => ['Post.group_id' => $temp],
 				'order' => 'Post.id DESC',
 				'joins' => [
@@ -99,7 +99,42 @@ class PostsController extends AppController
 		}
 		echo json_encode($post['Post']['likes']);
 	}
-
+	public function comment()
+	{
+		$this->autoRender = false;
+		$this->loadModel('Comment');
+		$this->loadModel('User');
+		$post_id = json_decode(file_get_contents('php://input'), true);
+		$comment = $this->Comment->find('all', [
+			'recursive' => -1,
+			'fields' => ['Comment.id', 'Comment.body', 'Comment.created', 'Comment.user_id', 'User.username'],
+			'conditions' => ['post_id' => $post_id],
+			'joins' => [
+				[
+					'table' => 'users',
+					'alias' => 'User',
+					'type' => 'inner',
+					'conditions' => ['Comment.user_id = User.id']
+				]
+			]
+		]);
+		echo json_encode($comment);
+	}
+	public function addcom()
+	{
+		$this->autoRender = false;
+		$this->loadModel('Comment');
+		$data = json_decode(file_get_contents("php://input"), true);
+		$body = $data['content'];
+		$user_id = $this->Session->read('User.id');
+		$post_id = $data['post_id'];
+		$qw = [
+			'body' => $body,
+			'user_id' => $user_id,
+			'post_id' => $post_id
+		];
+		$this->Comment->save($qw);
+	}
 	public function view($id = null)
 	{
 		if (!$id) {

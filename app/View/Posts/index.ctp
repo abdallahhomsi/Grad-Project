@@ -410,6 +410,119 @@ position: absolute;
     font-weight: 600;
 	}
 
+	.comment-overlay{
+		position: fixed;
+		width: 100%;
+		height: 100vh;
+		background-color: rgb(0 0 0 / 38%);
+		top: 0;
+		left: 0;
+		/* display: none; */
+		z-index: 100;
+	}
+	.comment-overlay .comments{
+		background-color: white;
+		width: 650px;
+		min-height: 200px;
+    max-height: 500px;
+    height: fit-content;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		border-radius: 10px;
+		padding: 30px 10px;
+		overflow: auto;
+	}
+	.comment-overlay .comments .comment{
+		position: relative;
+	background-color: #eee;
+    padding: 10px;
+    width: 75%;
+    margin: 10px auto;
+    border-radius: 0px 20px 20px 20px;
+	}
+	.comment-overlay .comments .comment .user-data{
+
+	}
+	.comment-overlay .comments .comment .user-data div{
+		height: 100%;
+	}
+	.comment-overlay .comments .comment .user-data img{
+		float: left;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+	}
+	.comment-overlay .comments .comment .user-data h5{
+
+	}
+	.comment-overlay .comments .comment .comment-content{
+
+	}
+	.comment-overlay .comments .comment .option {
+		float: right;
+		cursor: pointer;
+		position: absolute;
+		top: 5px;
+		right: 15px;
+	}
+	.comment-overlay .comments .comment .option:hover i{
+		color: var(--mainColor);
+	}
+	.comment-overlay .comments .no-comments{
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%,-50%);
+		text-align: center;
+	}
+	.comment-overlay .comments .no-comments i{
+    font-size: 65px;
+    color: #777;
+    margin-bottom: 30px;
+	}
+	.comment-overlay .comments .no-comments p{
+	font-weight: 600;
+    color: #333;
+	}
+	.comment-overlay .comments .make-comment{
+    width: 75%;
+    margin: 0px auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+	}
+	.comment-overlay .comments .make-comment textarea{
+	resize: none;
+    width: 94%;
+    border: 1px solid #777;
+    border-radius: 5px;
+    padding: 4px;
+    outline: none;
+	color: black;
+	font-weight: normal;
+	}
+	.comment-overlay .comments .make-comment i{
+		cursor: pointer;
+		font-size: 20px;
+	}
+	.comment-overlay .comments .make-comment i:hover{
+		color: var(--mainColor);
+	}
+	.comment-overlay .close-comments{
+		cursor: pointer;
+		cursor: pointer;
+    position: absolute;
+    right: 16%;
+    color: white;
+    font-size: 35px;
+    top: 11%;
+	}
+	.comment-overlay .close-comments:hover i{
+		color: var(--mainColor);
+
+	}
 </style>
 
 <body>
@@ -464,14 +577,19 @@ position: absolute;
 	</div>
 
 
+
 	<script>
 		let postOptionClass = "fa-solid fa-ellipsis";
-		let postLikeClass = "fa-solid fa-heart";
+		let postLikeClass = "fa-brands fa-gratipay";
 		let postCommentClass = "fa-solid fa-comment";
+		let noCommentClass= "fa-solid fa-comment";
+		let sendCommentClass = "fa-solid fa-paper-plane";
+		let squareCloseIcon = "fa-solid fa-circle-xmark";
 		let postData = <?php echo $posts; ?>;
 		let userGroups = <?php echo $groups; ?>;
 		let userRole = <?php echo $userRole; ?>;
 		let postErrorCount = 0;
+
 
 		function createPost(userData,role) {
 			let container = document.createElement('div');
@@ -597,6 +715,50 @@ position: absolute;
 	element.append(mySpan);
 	}
 }
+
+	// //Resize text Area
+	// document.querySelector('.comment-overlay .comments .make-comment textarea').addEventListener('input',function(){
+	// 	this.style.height = 'auto'; // Reset the height to auto to calculate the new height
+	// 	this.style.height = this.scrollHeight + 'px'; // Set the height to the scroll height
+	// });
+
+		//elements not exist at this time:
+		document.addEventListener('input',function(e){
+			let commentTextArea = document.querySelector('.comment-overlay .comments .make-comment textarea');
+			if(e.target === commentTextArea){
+				commentTextArea.style.height = 'auto'; // Reset the height to auto to calculate the new height
+				commentTextArea.style.height = commentTextArea.scrollHeight + 'px'; // Set the height to the scroll height
+			}
+		})
+		document.addEventListener('click',(e)=>{
+			let sendCommentBtn = document.querySelector('.comment-overlay .comments .make-comment i');
+			if(e.target.parentElement.classList.contains('close-comments'))
+			document.querySelector('.comment-overlay').remove();
+			if(e.target===sendCommentBtn){
+			if(e.target.previousElementSibling.value==="")
+			alert('error');
+			else{
+				let obj  = new Object();
+				obj.content = e.target.previousElementSibling.value;
+				obj.post_id = e.target.parentElement.parentElement.dataset.postid;
+				let postId= e.target.parentElement.parentElement.dataset.postid;
+				console.log(postId);
+				let req = new XMLHttpRequest();
+				req.open("POST","/cakephp/Posts/addcom");
+				req.onreadystatechange = ()=>{
+					if (req.readyState === XMLHttpRequest.DONE && req.status === 200) {
+						document.querySelector('.comment-overlay').remove();
+						document.querySelectorAll('.post .post-buttons .comment').forEach(el=>{
+							if(el.parentElement.parentElement.dataset.postid === postId){
+								el.click();
+							}
+						})
+				}
+				}
+				req.send(JSON.stringify(obj));
+			}
+		}
+		})
 		// ### Deal with user ###
 
 		//Generate Posts:
@@ -692,12 +854,83 @@ position: absolute;
 		});
 ///////////////////////////////////////////////////////////////////////////////
 
-
+		document.querySelectorAll('.post .post-buttons .comment').forEach(el=>{el.addEventListener('click',(e)=>{
+			let postId = e.target.parentElement.parentElement.dataset.postid;
+			let overlayDiv = document.createElement('div');
+			overlayDiv.classList.add('comment-overlay');
+			let comments = document.createElement('div');
+			comments.dataset.postid =postId;
+			comments.classList.add('comments');
+			let closeComments =document.createElement('span');
+			closeComments.classList.add('close-comments');
+			let closeIcon =document.createElement('i');
+			closeIcon.classList.add(...squareCloseIcon.split(' '));
+			closeComments.append(closeIcon);
+			let makeComment = document.createElement('div');
+			makeComment.classList.add("make-comment");
+			let textarea =document.createElement('textarea');
+			textarea.removeAttribute('cols');
+			textarea.setAttribute('rows','1');
+			textarea.placeholder="Type a Comment";
+			let sendIcon =document.createElement('i');
+			sendIcon.classList.add(...sendCommentClass.split(' '));
+			makeComment.append(textarea);
+			makeComment.append(sendIcon);
+			let xhr = new XMLHttpRequest();
+			xhr.open('POST','/cakephp/Posts/comment');
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+					if(xhr.responseText==="[]"){
+						let noCommentsDiv =document.createElement('div');
+						noCommentsDiv.classList.add('no-comments');
+						let icon =document.createElement('i');
+						icon.classList.add(...noCommentClass.split(' '));
+						let myP=document.createElement('p');
+						myP.append('No comments for this post');
+						noCommentsDiv.append(icon);
+						noCommentsDiv.append(myP);
+						comments.append(noCommentsDiv);
+						makeComment.style.cssText="position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%);";
+					}
+					else{
+						let allComments =JSON.parse(xhr.responseText);
+						allComments.forEach(el=>{
+							let newComment =document.createElement('div');
+							newComment.classList.add('comment');
+							let userData =document.createElement('div');
+							userData.classList.add('user-data');
+							let userImage =document.createElement('img');
+							userImage.src = '/cakephp/app/webroot/img/714.jpg';
+							let userName =document.createElement('h5');
+							userName.append(el.User.username);
+							userData.append(userImage);
+							userData.append(userName);
+							newComment.append(userData);
+							let commentContent =document.createElement('div');
+							commentContent.classList.add('comment-content');
+							commentContent.append(el.Comment.body);
+							newComment.append(commentContent);
+							newComment.dataset.userid = el.Comment.user_id;
+							newComment.dataset.postid =postId;
+							comments.append(newComment);
+							makeComment.style.cssText = "position:unset;"
+						})
+					}
+				}
+				comments.append(makeComment);
+				overlayDiv.append(comments);
+				overlayDiv.append(closeComments);
+				document.body.append(overlayDiv);
+			}
+			xhr.send(JSON.stringify(postId));
+		});
 		//Show groups when clicking on it
 		document.querySelector(".header .open-menu").addEventListener('click', (e) => {
 			e.currentTarget.parentElement.querySelector('.groups-list').classList.toggle('block');
 			e.target.classList.toggle('active');
-		});
+		});})
+
+
 
 
 		function printData(data) {
