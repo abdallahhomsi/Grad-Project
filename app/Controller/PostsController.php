@@ -34,7 +34,7 @@ class PostsController extends AppController
 			[
 				'recursive' => -1,
 				'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.id', 'User.username', 'User.role_id', 'Group.name', 'PostCounter.id'],
-				'conditions' => ['Post.group_id' => $temp],
+				'conditions' => ['Post.group_id' => $temp, 'Post.approved' => 1],
 				'order' => 'Post.id DESC',
 				'joins' => [
 					[
@@ -241,7 +241,8 @@ class PostsController extends AppController
 						'pic_path' => $file['name'],
 						'likes' => 0,
 						'user_id' => $this->Session->read('User.id'),
-						'group_id' => $data['group_id']
+						'group_id' => $data['group_id'],
+						'approved' => 0
 					];
 				}
 				move_uploaded_file($file['tmp_name'], WWW_ROOT . 'img/' . $file['name']);
@@ -317,5 +318,9 @@ class PostsController extends AppController
 			$this->Flash->success(__('Your post has been deleted.'));
 			return $this->redirect(array('controller' => 'users', 'action' => 'index'));
 		}
+	}
+	public function request()
+	{
+
 	}
 }

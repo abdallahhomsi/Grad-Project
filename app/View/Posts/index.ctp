@@ -538,7 +538,7 @@ position: absolute;
 				<li><i class="fa-solid fa-person-chalkboard"></i>Instructors</li>
 				<li><i class="fa-solid fa-calendar"></i>Events</li>
 				<li><i class="fa-solid fa-user"></i>Profile</li>
-				<li><i class="fa-solid fa-user"></i>Profile</li>
+				<li><i class="fa-solid fa-clipboard-check"></i>Requests</li>
 			</ul>
 		</div>
 		<div class="menu">
