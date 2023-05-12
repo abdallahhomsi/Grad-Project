@@ -313,6 +313,23 @@
 		font-weight: 800;
 	}
 
+		.header .links .nav-links li.request{
+		position: relative;
+	}
+	.header .links .nav-links li span{
+		position: absolute;
+    background-color: red;
+    height: 15px;
+    width: 15px;
+    font-size: 10px;
+    text-align: center;
+    color: white;
+    border-radius: 50%;
+    padding: 2px;
+    top: 10px;
+    left: -10px;
+	}
+
 	.popup-overlay {
 		position: fixed;
 		width: 100%;
@@ -523,6 +540,7 @@ position: absolute;
 		color: var(--mainColor);
 
 	}
+
 </style>
 
 <body>
@@ -538,7 +556,6 @@ position: absolute;
 				<li><i class="fa-solid fa-person-chalkboard"></i>Instructors</li>
 				<li><i class="fa-solid fa-calendar"></i>Events</li>
 				<li><i class="fa-solid fa-user"></i>Profile</li>
-				<li><i class="fa-solid fa-clipboard-check"></i>Requests</li>
 			</ul>
 		</div>
 		<div class="menu">
@@ -589,7 +606,12 @@ position: absolute;
 		let userGroups = <?php echo $groups; ?>;
 		let userRole = <?php echo $userRole; ?>;
 		let postErrorCount = 0;
-
+		let requestIconClass = "fa-solid fa-clipboard-check";
+		let currentUserRole = userRole[0].User.role_id;
+		let approvedCount1 = <?php echo $approved_count; ?>;
+		let approvedCount = '';
+		if(approvedCount1[0])
+		approvedCount=approvedCount1[0]['count(id)'];
 
 		function createPost(userData,role) {
 			let container = document.createElement('div');
@@ -768,6 +790,29 @@ position: absolute;
 		//Generte Groups:
 		generateGroups(userGroups);
 
+		//Generate some elements depend on privilege:
+		if(currentUserRole==='2'){
+			generateRequest();
+		}
+		function generateRequest(){
+			let listItem =document.createElement('li');
+			listItem.classList.add('request');
+			let requestIcon = document.createElement('i');
+			let requestNumber =document.createElement('span');
+
+			requestIcon.classList.add(...requestIconClass.split(' '));
+			listItem.append(requestIcon);
+			listItem.append('Requests');
+			if(approvedCount!==''){
+			requestNumber.append(approvedCount);
+			listItem.append(requestNumber);
+			}
+			document.querySelector('.header .links .nav-links').append(listItem);
+		}
+		if(document.querySelector('.header .links .nav-links li.request'))
+		document.querySelector('.header .links .nav-links li.request').onclick = function(){
+			window.location.href = '/cakephp/Posts/request';
+		}
 		//Handle post buttons:
 		document.querySelectorAll('.post').forEach(el => {
 			el.addEventListener('click', (e) => {

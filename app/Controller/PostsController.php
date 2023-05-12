@@ -63,6 +63,13 @@ class PostsController extends AppController
 			'fields' => ['role_id'],
 			'conditions' => ['id' => $this->Session->read('User.id')]
 		]);
+		$approved_count = $this->Post->find('first', [
+			'recursive' => -1,
+			'fields' => ['count(id)'],
+			'conditions' => ['approved' => 0],
+			'group' => 'approved'
+		]);
+		$this->set('approved_count', json_encode($approved_count));
 		$this->set('posts', json_encode($posts));
 		$this->set('userRole', json_encode($currentRole));
 		$this->set('groups', json_encode($group_name));
@@ -223,17 +230,26 @@ class PostsController extends AppController
 	{
 		$this->loadModel('Group');
 		$this->loadModel('UserRole');
+		$this->loadModel('User');
+
 		if ($this->request->is('post')) {
 			$this->autoRender = false;
 			$data = $this->request->data;
+			$currentRole = $this->User->find('all', [
+				'recursive' => -1,
+				'fields' => ['role_id'],
+				'conditions' => ['id' => $this->Session->read('User.id')]
+			]);
+			if ($currentRole[0]['User']['role_id'] == 1)
+				$access = 0;
+			else
+				$access = 1;
 			if (!empty($_FILES)) {
 				$file = $_FILES['file'];
 				$allowedTypes = array('jpg', 'jpeg', 'png', 'gif');
-				$allowedSize = 1024 * 1024; // 1 MB
+				// $allowedSize = 10 * 1024 * 1024; // 1 MB
 				if (!in_array(pathinfo($file['name'], PATHINFO_EXTENSION), $allowedTypes)) {
 					$this->Flash->error(__('Invalid file type.'));
-				} elseif ($file['size'] > $allowedSize || $file['size'] == 0) {
-					$this->Flash->error(__('File size exceeds limit.'));
 				} else {
 					$temp = [
 						'title' => $data['title'],
@@ -242,7 +258,7 @@ class PostsController extends AppController
 						'likes' => 0,
 						'user_id' => $this->Session->read('User.id'),
 						'group_id' => $data['group_id'],
-						'approved' => 0
+						'approved' => $access
 					];
 				}
 				move_uploaded_file($file['tmp_name'], WWW_ROOT . 'img/' . $file['name']);
@@ -252,7 +268,8 @@ class PostsController extends AppController
 					'body' => $data['content'],
 					'likes' => 0,
 					'user_id' => $this->Session->read('User.id'),
-					'group_id' => $data['group_id']
+					'group_id' => $data['group_id'],
+					'approved' => $access
 				];
 			}
 			$this->Post->create();
@@ -321,6 +338,88 @@ class PostsController extends AppController
 	}
 	public function request()
 	{
-
+		$this->loadModel('Post');
+		$this->loadModel('PostCounter');
+		$this->loadModel('UserRole');
+		$this->loadModel('User');
+		$this->loadModel('Group');
+		if ($this->request->is('post')) {
+			$this->autoRender = false;
+			$data = json_decode(file_get_contents("php://input"), true);
+			$value = $data['approved'];
+			$post_id = $data['post_id'];
+			if ($value == 1) {
+				$post = $this->Post->findById($post_id);
+				$this->Post->updateAll(
+					['approved' => 1],
+					['id' => $post_id]
+				);
+			} else {
+				$this->Post->delete($post_id);
+			}
+		} else {
+			$id = $this->Session->read('User.id');
+			$groups_id = $this->UserRole->find(
+				'all',
+				[
+					'recursive' => -1,
+					'fields' => ['group_id'],
+					'conditions' => ['user_id' => $id]
+				]
+			);
+			$temp = [];
+			foreach ($groups_id as $gi):
+				array_push($temp, $gi['UserRole']['group_id']);
+			endforeach;
+			$group_name = $this->Group->find('list', [
+				'recursive' => -1,
+				'fields' => ['name'],
+				'conditions' => ['id' => $temp]
+			]);
+			$posts = $this->Post->find(
+				'all',
+				[
+					'recursive' => -1,
+					'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.id', 'User.username', 'User.role_id', 'Group.name', 'PostCounter.id'],
+					'conditions' => ['Post.group_id' => $temp, 'Post.approved' => 0],
+					'order' => 'Post.id DESC',
+					'joins' => [
+						[
+							'table' => 'users',
+							'alias' => 'User',
+							'type' => 'inner',
+							'conditions' => ['Post.user_id = User.id']
+						],
+						[
+							'table' => 'groups',
+							'alias' => 'Group',
+							'type' => 'inner',
+							'conditions' => ['Post.group_id = Group.id']
+						],
+						[
+							'table' => 'post_counters',
+							'alias' => 'PostCounter',
+							'type' => 'left',
+							'conditions' => array('Post.id = PostCounter.post_id', 'PostCounter.user_id' => $this->Session->read('User.id'))
+						]
+					]
+				]
+			);
+			$currentRole = $this->User->find('all', [
+				'recursive' => -1,
+				'fields' => ['role_id'],
+				'conditions' => ['id' => $this->Session->read('User.id')]
+			]);
+			$approved_count = $this->Post->find('first', [
+				'recursive' => -1,
+				'fields' => ['count(id)'],
+				'conditions' => ['approved' => 0],
+				'group' => 'approved'
+			]);
+			$this->set('approved_count', $approved_count);
+			$this->set('posts', json_encode($posts));
+			$this->set('userRole', json_encode($currentRole));
+			$this->set('groups', json_encode($group_name));
+		}
 	}
 }
