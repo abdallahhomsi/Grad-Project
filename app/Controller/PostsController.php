@@ -142,6 +142,41 @@ class PostsController extends AppController
 		];
 		$this->Comment->save($qw);
 	}
+	public function deletepos()
+	{
+		$this->autoRender = false;
+		$data = json_decode(file_get_contents('php://input'), true);
+		$post_id = $data['post_id'];
+
+		$this->Post->delete($post_id);
+	}
+	public function deletecom()
+	{
+		$this->autoRender = false;
+		$this->loadModel('Comment');
+		$data = json_decode(file_get_contents('php://input'), true);
+		$id = $data['id'];
+
+		$this->Comment->delete($id);
+
+	}
+	public function editPost()
+	{
+		$this->autoRender = false;
+		$data = json_decode(file_get_contents('php://input'), true);
+		$id = $data['id'];
+		$title = $data['title'];
+		$body = $data['body'];
+		$data1 = array(
+			'Post' => array(
+				'id' => $id,
+				// Assuming you have the record ID
+				'title' => $title,
+				'body' => $body
+			)
+		);
+		$this->Post->save($data1);
+	}
 	public function view($id = null)
 	{
 		if (!$id) {

@@ -14,12 +14,12 @@
 	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
 </head>
 <style>
+
 	* {
 		padding: 0;
 		margin: 0;
 		box-sizing: border-box;
 	}
-
 	body {
 		font-family: 'Open Sans', sans-serif;
 		background-color: transparent;
@@ -354,5 +354,4 @@
 		window.location.href = '/cakephp/Posts/index';
 	})
 </script>
-
 </html>

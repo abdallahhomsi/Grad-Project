@@ -14,335 +14,245 @@
 	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
 </head>
 <style>
-	* {
-		padding: 0;
-		margin: 0;
-		box-sizing: border-box;
-	}
+	/* Start Variables */
+:root {
+  --error: "reqiured";
+  --emailError: "HU domain!";
+  /* Added by Yazan { */
+  --section-padding: 100px;
+  --main-color: #228e9e;
+  --main-background-image: linear-gradient(to bottom, #228e9e, #134850);
+  --main-border-radius: 5px;
+  /* } */
+}
 
-	body {
-		font-family: 'Open Sans', sans-serif;
-		background-color: transparent;
-		color: unset;
-	}
+/* End Variables */
 
-	:root {
-		--mainColor: #018785;
-		--postColor: #e6e6e642;
-	}
+/* Start Global Rules */
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
 
-	.container {
-		width: 700px;
-		margin: 0 auto;
-		margin: 30px auto;
-		padding: 0px 20px;
-	}
+html {
+  scroll-behavior: smooth;
+}
 
-	@media (max-width:576px) {
-		.container {
-			width: 100%;
-		}
-	}
+body {
+  font-family: "Open Sans", sans-serif;
+  background-color: #f0f2f5;
+}
 
-	.header {
-		position: fixed;
-		position: relative;
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-		padding: 0px 40px 0px 20px;
-		box-shadow: 0px -1px 5px black;
-	}
+ul {
+  list-style: none;
+}
 
-	.header .logo {
-		display: flex;
-		align-items: center;
-	}
+.container {
+  padding-left: 15px;
+  padding-right: 15px;
+  margin-left: auto;
+  margin-right: auto;
+}
 
-	.header .logo img {
-		width: 55px;
-		height: 55px;
-	}
+/* Small */
+@media (min-width: 768px) {
+  .container {
+    width: 750px;
+  }
+}
 
-	.header .logo h3 {
-		color: var(--mainColor);
-	}
+/* Medium */
+@media (min-width: 992px) {
+  .container {
+    width: 970px;
+  }
+}
 
-	/* .header .links {} */
+/* Large */
+@media (min-width: 1200px) {
+  .container {
+    width: 1170px;
+  }
+}
 
-	.header .links .nav-links {
-		display: flex;
-		list-style-type: none;
-		align-items: center;
-		height: 100%;
-	}
+/* End Global Rules */
 
-	.header .links .nav-links li {
-		display: flex;
-		list-style-type: none;
-		align-items: center;
-		height: 100%;
-		margin-left: 30px;
-		cursor: pointer;
-		color: black;
-	}
+.login-landing {
+  padding-top: var(--section-padding);
+  padding-bottom: var(--section-padding);
+  min-height: 100vh;
+}
 
-	.header .links .nav-links li i {
-		margin-right: 5px;
-	}
+.login-landing .container {
+  height: 100%;
 
-	.header .links .nav-links li.active,
-	.header .links .nav-links li:hover {
-		color: var(--mainColor);
-	}
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+}
 
-	.header .menu {
-		height: 100%;
-		padding-top: 3px;
-		font-size: 40px;
-		display: none;
-	}
+.login-landing .content {
+  width: 500px;
+  padding: 15px;
+  text-align: center;
+}
 
-	@media (max-width:576px) {
-		.header .menu {
-			display: block;
-		}
-	}
+.login-landing .content .logo {
+  width: 300px;
+}
 
-	.create-post {
-		padding: 50px 20px;
-		padding-top: 30px;
-		margin: 40px 0px;
-		border: 1px solid var(--mainColor);
-		border-radius: 10px;
-	}
+.login-landing .content p {
+  padding-left: 60px;
+  font-size: 25px;
+  line-height: 1.6;
+}
 
-	.create-post p {
-		color: #777;
-		padding: 20px;
-		border: 1px solid #777;
-		border-radius: 10px;
-		cursor: text;
-		margin-bottom: 10px;
-	}
+@media (max-width: 767px) {
+  .login-landing .content p {
+    padding-left: 0;
+  }
 
-	.create-post .post-button {
-		cursor: pointer;
-		background-color: var(--mainColor);
-		color: white;
-		padding: 7px 15px;
-		width: fit-content;
-		border-radius: 4px;
-		float: right;
-	}
+  .login-landing {
+    padding-top: calc(var(--section-padding) / 2);
+    padding-bottom: calc(var(--section-padding) / 2);
+  }
+}
 
-	.post {
-		padding: 5px 20px;
-		background-color: var(--postColor);
-	}
+.login-landing .login-section {
+  background-color: white;
+	transition: .3s;
+  position: relative;
+  width: 400px;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 5px 5px 15px black;
+}
 
-	.post .option {
-		float: right;
-		margin-right: 20px;
-		cursor: pointer;
-		margin-top: 10px;
-		font-size: 20px;
-	}
+.login-landing .content span {
+  background-color: var(--main-color);
+  color: white;
+  padding: 2px 8px;
+  transform: skew(10deg, 10deg);
+  border-radius: var(--main-border-radius);
+}
 
-	.post .option:hover {
-		color: var(--mainColor);
-	}
+.login-landing .login-section form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
 
-	.profile-data {
-		padding: 10px;
-	}
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: var(--main-border-radius);
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
 
-	.profile-data img {
-		width: 45px;
-		height: 45px;
-		border-radius: 50%;
-		float: left;
-		margin-right: 5px;
-	}
+input[type="submit"] {
+  display: block;
+  width: 100%;
+  background-color: #228e9e;
+  background-image: var(--main-background-image);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--main-border-radius);
+  font-size: 16px;
+  cursor: pointer;
+  margin: 20px auto 0;
+}
 
-	.profile-data h4 {
-		vertical-align: top;
-		color: black;
-		font-weight: 600;
-	}
+button.register {
+  display: block;
+  width: 100%;
+  background-color: #228e9e;
+  background-image: var(--main-background-image);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--main-border-radius);
+  font-size: 16px;
+  cursor: pointer;
+  margin: 20px auto 0;
+}
 
-	.profile-data h6 {
-		display: inline-block;
-		color: #777;
-		font-weight: normal;
-	}
+.login-landing .login-section form span.error {
+  display: block;
 
-	.post-data {
-		padding: 15px 30px;
-		margin: 5px;
-		font-size: 20px;
-		color: black;
-	}
+  background-color: red;
+  color: white;
 
-	.post-data::selection {
-		color: var(--mainColor);
-	}
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  text-align: center;
 
-	.post-data .title {
-		font-weight: 600;
-	}
+  position: absolute;
+  z-index: 2;
+  right: 10px;
+  top: 35%;
 
-	.post-buttons {
-		display: flex;
-		justify-content: space-evenly;
-		border-top-style: solid;
-		border-top-color: #ddd;
-		border-top-width: 1px;
-		padding: 10px 0px;
-	}
+  transform: translateY(-50%);
+  cursor: pointer;
+}
 
-	.post-buttons div {
-		margin-left: 10px;
-		cursor: pointer;
-		font-size: 15px;
-		position: relative;
-		padding: 5px;
-	}
+.login-landing .login-section form span.error span.text {
+  position: absolute;
+  padding: 4px;
+  border-radius: 6px;
 
-	.post-buttons div::before {
-		content: "";
-		position: absolute;
-		width: 100%;
-		height: 100%;
-		left: 0;
-		top: 0;
-	}
+  top: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #1d1d1d;
+  color: white;
+  border-radius: var(--main-border-radius);
+  width: 200px;
+  display: none;
+}
 
-	.post-buttons div:hover::before {
-		background-color: var(--mainColor);
-		opacity: 0.1;
-		border-radius: 10px;
-	}
-
-	.post-buttons div i {
-		margin-right: 2px;
-	}
-
-	.post-buttons div.like.active {
-		color: var(--mainColor);
-	}
-
-	.groups {
-		float: left;
-		width: 300px;
-		padding: 30px;
-	}
-
-	/* .groups {
-
-} */
-
-	.header .open-menu {
-		display: flex;
-		justify-content: space-between;
-		cursor: pointer;
-		font-size: 17px;
-		align-items: center;
-	}
-
-	.header .open-menu i {
-		margin-left: 10px;
-	}
-
-	.header .open-menu:hover i,
-	.header .open-menu.active i {
-		color: var(--mainColor);
-	}
-
-
-	.header .groups-list {
-		display: flex;
-		list-style-type: none;
-		margin-top: 10px;
-		transition: .3s;
-		background-color: white;
-		border: 2px solid #eee;
-		position: absolute;
-		right: 30px;
-		top: 50px;
-		width: 300px;
-		display: none;
-		padding: 0px 20px;
-		padding-bottom: 10px;
-	}
-
-	.header .groups-list.block {
-		display: block;
-	}
-
-	.header .groups-list li {
-		padding: 5px;
-		margin-top: 15px;
-	}
-
-	.header .groups-list li a {
-		text-decoration: none;
-		color: black;
-	}
-
-	.header .groups-list li a.add-group {
-		justify-content: center;
-		display: flex;
-		color: var(--mainColor);
-		font-weight: 800;
-	}
-
-	.login-landing {
-		width: 100%;
-		height: 100vh;
-	}
-
-	.login-landing .login-section {
-		width: 300px;
-		background-color: #eee;
-		height: 400px;
-		margin: auto;
-		text-align: center;
-		padding: 50px 20px;
-		position: relative;
-	}
-
-	.login-landing .login-section form {
-		width: 100%;
-	}
-
-	/* .login-landing .login-section form input:not([type='submit']) {} */
-
-	.login-landing .login-section form input {
-		outline: none;
-		margin-bottom: 30px;
-	}
-
-	.login-landing .login-section .error-message {
-		border: none;
-		margin-top: 50px;
-	}
+.login-landing .login-section form span.error:hover span.text {
+  display: block;
+}
+.login-landing .login-section .error-message{
+	color: red;
+	text-align: center;
+	font-weight: 600;
+	margin-top: 10px;
+}
 </style>
 
 
-<body>
-	<div class="login-landing">
-		<div class="login-section">
-			<form action="" method="post">
-				<input type="text" name="username" id="username" placeholder="User Name" required>
-				<input type="password" name="password" id="password" placeholder="Password" required>
-				<input type="submit" value="Login">
-			</form>
-			<button class="register">Sign Up</button>
-
+<div class="login-landing">
+		<div class="container">
+			<div class="content">
+				<img src="/cakephp/app/webroot/img/logo.png" alt="" class="logo" />
+				<p>
+					Connect with your classmates and the Universities around you on
+					<br />
+					<span> University World </span>
+				</p>
+			</div>
+			<div class="login-section">
+				<form action="" method="post">
+					<input type="text" name="username" id="username" placeholder="User Name" required>
+					<input type="password" name="password" id="password" placeholder="Password" required>
+					<input type="submit" value="Login">
+				</form>
+				<button class="register">Sign Up</button>
+			</div>
 		</div>
 	</div>
-
 
 	<script>
 		document.querySelector('.login-landing .login-section .register').onclick = function () {

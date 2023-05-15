@@ -147,12 +147,38 @@
 		cursor: pointer;
 		margin-top: 10px;
 		font-size: 20px;
+		position: relative;
 	}
 
-	.post .option:hover {
+	/* .post .option:hover {
 		color: var(--mainColor);
+	} */
+	.post .option .delete{
+	background-color: white;
+    position: absolute;
+    top: 20px;
+    left: -50px;
+    padding: 5px;
+	display: none;
 	}
-
+	.post .option .delete.active{
+		display: block;
+	}
+	.post .option .edit-post{
+	background-color: white;
+    position: absolute;
+    top: 52px;
+    left: -50px;
+    padding: 5px;
+    display: none;
+    width: 70px;
+    border-top-color: #eee;
+    border-top-width: 1px;
+    border-top-style: solid;
+	}
+	.post .option .edit-post.active{
+		display: block;
+	}
 	.profile-data {
 		padding: 10px;
 	}
@@ -277,19 +303,18 @@
 
 
 	.header .groups-list {
-		display: flex;
-		list-style-type: none;
-		margin-top: 10px;
-		transition: .3s;
-		background-color: white;
-		border: 2px solid #eee;
-		position: absolute;
-		right: 30px;
-		top: 50px;
-		width: 300px;
-		display: none;
-		padding: 0px 20px;
-		padding-bottom: 10px;
+	list-style-type: none;
+    margin-top: 10px;
+    transition: .3s;
+    background-color: white;
+    border: 2px solid #eee;
+    position: absolute;
+    right: 30px;
+    top: 50px;
+    width: 300px;
+    display: none;
+    padding: 0px 20px;
+    padding-bottom: 10px;
 	}
 
 	.header .groups-list.block {
@@ -340,6 +365,7 @@
 		display: none;
 		z-index: 100;
 	}
+
 
 	.popup-overlay .popup-content {
 		background-color: white;
@@ -478,15 +504,38 @@ position: absolute;
 
 	}
 	.comment-overlay .comments .comment .option {
-		float: right;
-		cursor: pointer;
-		position: absolute;
-		top: 5px;
-		right: 15px;
+	cursor: pointer;
+    position: absolute;
+    top: 5px;
+    right: 45px;
+    width: 80px;
 	}
 	.comment-overlay .comments .comment .option:hover i{
 		color: var(--mainColor);
 	}
+
+	.comment-overlay .comments .comment .option .deleteComment{
+		background-color: white;
+		padding:5px 15px;
+		display: none;
+	}
+	.comment-overlay .comments .comment .option .deleteComment.active{
+		display: block;
+	}
+	.comment-overlay .comments .comment .option .editComment{
+	background-color: white;
+    padding: 5px 15px;
+    display: none;
+    border-top-color: #eee;
+    border-top-width: 1px;
+    border-top-style: solid;
+	}
+	.comment-overlay .comments .comment .option .editComment.active{
+		    display: block;
+    position: relative;
+    z-index: 100;
+	}
+
 	.comment-overlay .comments .no-comments{
 		position: absolute;
 		top: 50%;
@@ -538,9 +587,72 @@ position: absolute;
 	}
 	.comment-overlay .close-comments:hover i{
 		color: var(--mainColor);
-
 	}
 
+	.edit-overlay{
+		position: fixed;
+		width: 100%;
+		height: 100vh;
+		background-color: rgb(0 0 0 / 38%);
+		top: 0;
+		left: 0;
+		z-index: 100;
+	}
+	.edit-overlay .edit-content{
+		background-color: white;
+		width: 650px;
+		height: 492px;
+		position: absolute;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, -50%);
+		border-radius: 10px;
+	}
+	.edit-overlay .close-edit {
+		position: absolute;
+		bottom: 20px;
+		right: 95px;
+		z-index: 3000;
+		color: red;
+		cursor: pointer;
+		font-size: 35px;
+	}
+	.edit-overlay .edit-content .edit-post-button {
+	cursor: pointer;
+    background-color: var(--mainColor);
+    color: white;
+    padding: 7px 15px;
+    width: fit-content;
+    border-radius: 4px;
+    position: absolute;
+    bottom: 23px;
+    right: 23px;
+    z-index: 3000;
+	}
+	.edit-overlay .edit-content form{
+    display: flex;
+    flex-direction: column;
+    width: 480px;
+    justify-content: center;
+    margin: 0 auto;
+    padding: 20px;
+	}
+	.edit-overlay .edit-content form input[type="text"]{
+outline: none;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 5px;
+    margin: 10px 0px 20px;
+	}
+	.edit-overlay .edit-content form textarea{
+height: 300px;
+    overflow: hidden;
+    resize: none;
+    padding: 5px;
+    outline: none;
+    border: 1px solid #333;
+    border-radius: 5px;
+	}
 </style>
 
 <body>
@@ -605,6 +717,7 @@ position: absolute;
 		let postData = <?php echo $posts; ?>;
 		let userGroups = <?php echo $groups; ?>;
 		let userRole = <?php echo $userRole; ?>;
+		let sessionID = <?php echo $this->session->read('User.id')?>;
 		let postErrorCount = 0;
 		let requestIconClass = "fa-solid fa-clipboard-check";
 		let currentUserRole = userRole[0].User.role_id;
@@ -614,9 +727,9 @@ position: absolute;
 		approvedCount=approvedCount1[0]['count(id)'];
 
 		function createPost(userData,role) {
+			let optionAppend = false;
 			let container = document.createElement('div');
 			let mainDiv = document.createElement('div');
-			let option = document.createElement('div');
 			let profileData = document.createElement('div');
 			let profileImage = document.createElement('img');
 			let profileName = document.createElement('h4');
@@ -630,13 +743,29 @@ position: absolute;
 			mainDiv.classList.add('post');
 			mainDiv.dataset.postid = userData.Post["id"];
 			mainDiv.dataset.userid = userData.User["id"];
-			option.classList.add('option');
+
+			let option = document.createElement('div');
 			let optionIcon = document.createElement('i');
+			let deleteOption =document.createElement('div');
+			let editOption =document.createElement('div');
+			if(currentUserRole==='2' || userData.User.id == sessionID){
+			option.classList.add('option');
 			optionIcon.classList.add(...postOptionClass.split(' '));
 			option.append(optionIcon);
+			deleteOption.classList.add('delete');
+			deleteOption.append('Delete');
+			option.append(deleteOption);
+			optionAppend=true;
+			}
+			if(userData.User.id == sessionID)
+			{
+				editOption.classList.add('edit-post');
+				editOption.append('Edit');
+				option.append(editOption);
+			}
 
 			profileData.classList.add('profile-data');
-			profileImage.src = ``;
+			profileImage.src = `/cakephp/app/webroot/img/714.jpg`;
 			profileImage.alt = "User";
 			profileName.append(userData.User["username"]);
 			groupName.append(userData.Group.name);
@@ -687,7 +816,7 @@ position: absolute;
 				myImage.classList.add('post-image');
 				PostData.append(myImage);
 			}
-
+			if(optionAppend)
 			mainDiv.append(option);
 			mainDiv.append(profileData);
 			mainDiv.append(PostData);
@@ -725,6 +854,7 @@ position: absolute;
 			});
 		}
 
+
 			function createError(element,message){
 	if(!element.querySelector('span')){
 	let mySpan=document.createElement('span');
@@ -738,12 +868,8 @@ position: absolute;
 	}
 }
 
-	// //Resize text Area
-	// document.querySelector('.comment-overlay .comments .make-comment textarea').addEventListener('input',function(){
-	// 	this.style.height = 'auto'; // Reset the height to auto to calculate the new height
-	// 	this.style.height = this.scrollHeight + 'px'; // Set the height to the scroll height
-	// });
 
+	//###############################################################
 		//elements not exist at this time:
 		document.addEventListener('input',function(e){
 			let commentTextArea = document.querySelector('.comment-overlay .comments .make-comment textarea');
@@ -780,7 +906,100 @@ position: absolute;
 				req.send(JSON.stringify(obj));
 			}
 		}
+		else if(e.target.parentElement.classList.contains('option') && e.target.parentElement.parentElement.classList.contains('post')){
+			e.target.parentElement.querySelector('.delete').classList.toggle('active');
+			if(e.target.parentElement.querySelector('.edit-post'))
+			e.target.parentElement.querySelector('.edit-post').classList.toggle('active');
+		}
+			if(e.target.classList.contains('delete')){
+				let req = new XMLHttpRequest();
+				let obj = new Object();
+				req.open('POS','/cakephp/Posts/deletepos');
+				req.onreadystatechange = function(){
+					if(this.readyState===4 && this.status===200){
+						window.location.href = '/cakephp/Posts/index';
+					}
+
+				}
+				obj.post_id = e.target.parentElement.parentElement.dataset.postid;
+				req.send(JSON.stringify(obj));
+			}
+		if(e.target.parentElement.classList.contains('option') && e.target.parentElement.parentElement.classList.contains('comment')){
+			e.target.parentElement.querySelector('.deleteComment').classList.toggle('active');
+			if(e.target.parentElement.querySelector('.editComment'))
+			e.target.parentElement.querySelector('.editComment').classList.toggle('active');
+		}
+		if(e.target.classList.contains('edit-post')){
+			let postID = e.target.parentElement.parentElement.dataset.postid;
+			let popup =document.createElement('div');
+			popup.classList.add('edit-overlay');
+			let popupContent =document.createElement('div');
+			popupContent.classList.add('edit-content');
+			popupContent.dataset.id =postID;
+			let closeSpan =document.createElement('span');
+			closeSpan.classList.add('close-edit');
+			let closeIcon =document.createElement('i');
+			closeIcon.classList.add(..."fa-solid fa-square-xmark".split(' '));
+			closeSpan.append(closeIcon)
+			popupContent.append(closeSpan);
+			let editButton =document.createElement('div');
+			editButton.classList.add('edit-post-button');
+			editButton.append('Edit');
+			popupContent.append(editButton);
+			let form = document.createElement('form');
+			let myForm = document.createElement('form');
+			//if post
+			let title =document.createElement('input');
+			let postContent =document.createElement('textarea');
+			title.type='text';
+			title.placeholder="Title";
+			title.value = e.target.parentElement.parentElement.querySelector('.post-data .title').textContent;
+			postContent.append(e.target.parentElement.parentElement.querySelector('.post-data .title').nextSibling.textContent);
+			postContent.placeholder="Content";
+			form.append(title);
+			form.append(postContent)
+			popupContent.append(form);
+			popup.append(popupContent);
+			document.body.append(popup);
+		}
+		if(e.target.classList.contains('close-edit') || e.target.parentElement.classList.contains('close-edit')){
+			document.querySelector('.edit-overlay').remove();
+		}
+		if(e.target.classList.contains('edit-post-button')){
+			let postID = e.target.parentElement.dataset.id;
+			//Database
+			console.log(e.target.parentElement);
+			let obj = new Object();
+			obj.id  = postID;
+			obj.title = e.target.parentElement.querySelector('form input[type="text"]').value;
+			obj.body = e.target.parentElement.querySelector('form textarea').value;
+
+			let req = new XMLHttpRequest();
+			req.open('POST','/cakephp/Posts/editPost');
+			req.onreadystatechange=function(){
+				if(this.readyState===4 && this.status===200){
+					window.location.href = '/cakephp/Posts/index';
+				}
+			}
+			req.send(JSON.stringify(obj));
+		}
+		if(e.target.classList.contains('deleteComment')){
+			let obj = new Object();
+			obj.id = e.target.parentElement.parentElement.dataset.commentid;
+			let req = new XMLHttpRequest();
+			req.open('POST','/cakephp/Posts/deletecom');
+			req.onreadystatechange =function(){
+				if(this.readyState===4 && this.status===200){
+					window.location.href = '/cakephp/Posts/index';
+				}
+			}
+			req.send(JSON.stringify(obj));
+		}
+
+
 		})
+
+
 		// ### Deal with user ###
 
 		//Generate Posts:
@@ -897,7 +1116,8 @@ position: absolute;
 			xhr.send(formData);
 		}
 		});
-///////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////Creating Comment ///////////////////////////////////////////////
 
 		document.querySelectorAll('.post .post-buttons .comment').forEach(el=>{el.addEventListener('click',(e)=>{
 			let postId = e.target.parentElement.parentElement.dataset.postid;
@@ -935,10 +1155,11 @@ position: absolute;
 						noCommentsDiv.append(icon);
 						noCommentsDiv.append(myP);
 						comments.append(noCommentsDiv);
-						makeComment.style.cssText="position: absolute; bottom: 0px; left: 50%; transform: translateX(-50%);";
+						makeComment.style.cssText="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);";
 					}
 					else{
 						let allComments =JSON.parse(xhr.responseText);
+						console.log(allComments);
 						allComments.forEach(el=>{
 							let newComment =document.createElement('div');
 							newComment.classList.add('comment');
@@ -957,6 +1178,32 @@ position: absolute;
 							newComment.append(commentContent);
 							newComment.dataset.userid = el.Comment.user_id;
 							newComment.dataset.postid =postId;
+							newComment.dataset.commentid =el.Comment.id;
+							///
+							// console.log(el.Comment.user_id);
+							// console.log(sessionID);
+							let option =document.createElement('div');
+							let optionIcon =document.createElement('i');
+							let deleteComment =document.createElement('div');
+
+							if(currentUserRole==='2'|| el.Comment.user_id==sessionID){
+							option.classList.add('option');
+							optionIcon.classList.add(...postOptionClass.split(' '));
+							option.append(optionIcon);
+							deleteComment.append('Delete');
+							deleteComment.classList.add('deleteComment');
+							option.append(deleteComment);
+							}
+							let editOption =document.createElement('div');
+							if(el.Comment.user_id==sessionID){
+								editOption.classList.add('editComment');
+								editOption.append('Edit');
+								option.append(editOption);
+							}
+							if(currentUserRole==='2'||el.Comment.user_id==sessionID){
+							newComment.append(option);
+							}
+							///
 							comments.append(newComment);
 							makeComment.style.cssText = "position:unset;"
 						})
@@ -969,13 +1216,11 @@ position: absolute;
 			}
 			xhr.send(JSON.stringify(postId));
 		});
-		//Show groups when clicking on it
+		})//Show groups when clicking on it
 		document.querySelector(".header .open-menu").addEventListener('click', (e) => {
-			e.currentTarget.parentElement.querySelector('.groups-list').classList.toggle('block');
+e.currentTarget.parentElement.querySelector('.groups-list').classList.toggle('block');
 			e.target.classList.toggle('active');
-		});})
-
-
+		});
 
 
 		function printData(data) {
