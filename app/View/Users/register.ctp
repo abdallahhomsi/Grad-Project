@@ -335,7 +335,7 @@ for (let prop in groupNames) {
 	if(firstTime)
 	firstTime=false;
 	else{
-	values.push(prop)
+	values.push(prop);
 	groups.push(groupNames[`${prop}`]);
 	}
 }

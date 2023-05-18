@@ -33,7 +33,7 @@ class PostsController extends AppController
 			'all',
 			[
 				'recursive' => -1,
-				'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.id', 'User.username', 'User.role_id', 'Group.name', 'PostCounter.id'],
+				'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.id', 'User.username', 'User.role_id', 'Group.name', 'Group.id', 'PostCounter.id'],
 				'conditions' => ['Post.group_id' => $temp, 'Post.approved' => 1],
 				'order' => 'Post.id DESC',
 				'joins' => [
@@ -176,6 +176,21 @@ class PostsController extends AppController
 			)
 		);
 		$this->Post->save($data1);
+	}
+	public function editcom()
+	{
+		$this->autoRender = false;
+		$this->loadModel('Comment');
+		$data = json_decode(file_get_contents('php://input'), true);
+		$comment_id = $data['id'];
+		$comment_body = $data['content'];
+		$data1 = array(
+			'Comment' => array(
+				'id' => $comment_id,
+				'body' => $comment_body
+			)
+		);
+		$this->Comment->save($data1);
 	}
 	public function view($id = null)
 	{
@@ -456,5 +471,190 @@ class PostsController extends AppController
 			$this->set('userRole', json_encode($currentRole));
 			$this->set('groups', json_encode($group_name));
 		}
+	}
+
+	public function group()
+	{
+		$this->loadModel('Post');
+		$this->loadModel('PostCounter');
+		$this->loadModel('UserRole');
+		$this->loadModel('User');
+		$this->loadModel('Group');
+
+		$id = $this->Session->read('User.id');
+		$groups_id = $this->UserRole->find(
+			'all',
+			[
+				'recursive' => -1,
+				'fields' => ['group_id'],
+				'conditions' => ['user_id' => $id]
+			]
+		);
+		$temp = [];
+		foreach ($groups_id as $gi):
+			array_push($temp, $gi['UserRole']['group_id']);
+		endforeach;
+		$group_name = $this->Group->find('list', [
+			'recursive' => -1,
+			'fields' => ['name'],
+			'conditions' => ['id' => $temp]
+		]);
+		$posts = $this->Post->find(
+			'all',
+			[
+				'recursive' => -1,
+				'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.id', 'User.username', 'User.role_id', 'Group.name', 'Group.id', 'PostCounter.id'],
+				'conditions' => ['Post.group_id' => $temp, 'Post.approved' => 1],
+				'order' => 'Post.id DESC',
+				'joins' => [
+					[
+						'table' => 'users',
+						'alias' => 'User',
+						'type' => 'inner',
+						'conditions' => ['Post.user_id = User.id']
+					],
+					[
+						'table' => 'groups',
+						'alias' => 'Group',
+						'type' => 'inner',
+						'conditions' => ['Post.group_id = Group.id']
+					],
+					[
+						'table' => 'post_counters',
+						'alias' => 'PostCounter',
+						'type' => 'left',
+						'conditions' => array('Post.id = PostCounter.post_id', 'PostCounter.user_id' => $this->Session->read('User.id'))
+					]
+				]
+			]
+		);
+		$currentRole = $this->User->find('all', [
+			'recursive' => -1,
+			'fields' => ['role_id'],
+			'conditions' => ['id' => $this->Session->read('User.id')]
+		]);
+		$approved_count = $this->Post->find('first', [
+			'recursive' => -1,
+			'fields' => ['count(id)'],
+			'conditions' => ['approved' => 0],
+			'group' => 'approved'
+		]);
+		$this->set('approved_count', json_encode($approved_count));
+		$this->set('posts', json_encode($posts));
+		$this->set('userRole', json_encode($currentRole));
+		$this->set('groups', json_encode($group_name));
+	}
+	public function addgroup()
+	{
+		$this->autoRender = false;
+		$this->loadModel('Group');
+		$this->loadModel('UserRole');
+		$group_options = $this->Group->find('all', [
+			'recursive' => -1,
+			'fields' => ['id', 'name']
+		]);
+		$id = $this->Session->read('User.id');
+		$groups_id = $this->UserRole->find(
+			'list',
+			[
+				'recursive' => -1,
+				'fields' => ['group_id'],
+				'conditions' => ['user_id' => $id]
+			]
+		);
+		$final = [];
+		foreach ($group_options as $a) {
+			if ($a['Group']['id'] == 11)
+				continue;
+			if (empty(array_search($a['Group']['id'], $groups_id))) {
+				$final[$a['Group']['id']] = $a['Group']['name'];
+			}
+		}
+		$approved_count = $this->UserRole->find('all', [
+			'recursive' => -1,
+			'fields' => ['group_id', 'count(group_id)'],
+			'group' => 'group_id'
+		]);
+		$response = array(
+			'members' => $approved_count,
+			'groups' => $final
+		);
+		echo json_encode($response);
+	}
+	public function appendgroup()
+	{
+		$this->autoRender = false;
+		$this->loadModel('UserRole');
+		$data = json_decode(file_get_contents('php://input'), true);
+		$group_id = $data['id'];
+		$user_id = $this->Session->read('User.id');
+		$temp = [
+			'user_id' => $user_id,
+			'group_id' => $group_id,
+			'role_id' => 1
+		];
+		$this->UserRole->create();
+		$this->UserRole->save($temp);
+		echo json_encode($temp);
+	}
+	public function creategroup()
+	{
+		$this->autoRender = false;
+		$this->loadModel('Group');
+		$this->loadModel('User');
+		$this->loadModel('UserRole');
+		$data = json_decode(file_get_contents('php://input'), true);
+		$group_name = $data['group_name'];
+		$temp = [
+			'name' => $group_name,
+			'deleted' => 0
+		];
+		$this->Group->create();
+		$this->Group->save($temp);
+		$lastRecord = $this->Group->find(
+			'first',
+			array(
+				'order' => array('Group.created' => 'DESC'),
+				'limit' => 1
+			)
+		);
+		$group_id = $lastRecord['Group']['id'];
+		$usersRole = $this->User->find('all', [
+			'recursive' => -1,
+			'fields' => ['id'],
+			'conditions' => ['role_id' => 2]
+		]);
+		foreach ($usersRole as $key) {
+			$t = [
+				'user_id' => $key['User']['id'],
+				'group_id' => $group_id,
+				'role_id' => 1
+			];
+			$this->UserRole->create();
+			$this->UserRole->save($t);
+		}
+	}
+	public function deletegroup()
+	{
+		$this->autoRender = false;
+		$this->loadModel('Group');
+		$data = json_decode(file_get_contents('php://input'), true);
+		$group_id = $data['id'];
+		$this->Group->delete($group_id);
+	}
+	public function leavegroup()
+	{
+		$this->autoRender = false;
+		$this->loadModel('UserRole');
+		$data = json_decode(file_get_contents('php://input'), true);
+		$group_id = $data['id'];
+		$user_id = $this->Session->read('User.id');
+
+		$id = $this->UserRole->find('first', [
+			'recursive' => -1,
+			'fields' => ['id'],
+			'conditions' => ['group_id' => $group_id, 'user_id' => $user_id]
+		]);
+		$this->UserRole->delete($id['UserRole']['id']);
 	}
 }

@@ -63,8 +63,7 @@ class UsersController extends AppController
 		} else {
 			$group_options = $this->Group->find('list', [
 				'recursive' => -1,
-				'fields' => ['Group.id', 'Group.name'],
-				'limit' => 7
+				'fields' => ['Group.id', 'Group.name']
 			]);
 			$this->set('group_options', json_encode($group_options));
 		}

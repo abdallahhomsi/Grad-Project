@@ -1282,6 +1282,7 @@ position: fixed;
 
 		//Generate Posts:
 		for (let i = 0; i < postData.length; i++) {
+			if(localStorage['choosen-group'] === postData[i].Group.id)
 			createPost(postData[i],userRole[0].User.role_id);
 		}
 		//Generte Groups:
@@ -1607,6 +1608,10 @@ position: fixed;
 		})
 		if(currentUserRole==='2')
 		document.querySelector('.groups-list li a').innerHTML='+ Create Group';
+
+		function printData(data) {
+			console.log(`${data}`);
+		}
 
 	</script>
 </body>
