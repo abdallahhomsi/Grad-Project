@@ -814,11 +814,10 @@ position: fixed;
 		</div>
 		<div class="links">
 			<ul class="nav-links">
-				<li class="active"><i class="fa-solid fa-house"></i></i>Home</li>
-				<li><i class="fa-solid fa-book-open"></i>Books</li>
-				<li><i class="fa-solid fa-person-chalkboard"></i>Instructors</li>
-				<li><i class="fa-solid fa-calendar"></i>Events</li>
-				<li><i class="fa-solid fa-user"></i>Profile</li>
+				<li class="active home"><i class="fa-solid fa-house"></i></i>Home</li>
+				<li class="books"><i class="fa-solid fa-book-open "></i>Books</li>
+				<li class="events"><i class="fa-solid fa-calendar "></i>Events</li>
+				<li class="profile"><i class="fa-solid fa-user "></i>Profile</li>
 			</ul>
 		</div>
 		<div class="menu">
@@ -1612,7 +1611,23 @@ position: fixed;
 		function printData(data) {
 			console.log(`${data}`);
 		}
-
+		document.querySelectorAll('.header .links .nav-links li').forEach(el=>{
+			el.addEventListener('click',(e)=>{
+				console.log(e.target);
+				if(e.currentTarget.classList.contains('events')){
+					window.location.href = '/cakephp/Events/index';
+				}
+				else if(e.currentTarget.classList.contains('books')){
+					window.location.href = '/cakephp/Books/index';
+				}
+				else if(e.currentTarget.classList.contains('profile')){
+					window.location.href = '/cakephp/Profile/index';
+				}
+				else if(e.currentTarget.classList.contains('home')){
+					window.location.href = '/cakephp/Posts/index';
+				}
+			})
+		})
 	</script>
 </body>
 
