@@ -66,8 +66,9 @@
 				addButton.append('Add Event');
 				document.body.append(addButton);
 				}
-			let eventTemplate = document.createElement('div');
+				let eventTemplate = document.createElement('div');
 			eventTemplate.classList.add('events');
+			if(eventsData.length!==0){
 			eventsData.forEach(element => {
 				let eventCard = document.createElement('div');
 				eventCard.classList.add('event');
@@ -104,6 +105,10 @@
 				option.append(optionIcon);
 				eventCard.append(option);
 				}
+				let details =document.createElement('div');
+				details.classList.add('event-details');
+				details.append('Details >');
+				frontFace.append(details);
 				frontFace.append(title);
 				frontFace.append(location);
 				frontFace.append(startTime);
@@ -115,6 +120,19 @@
 				eventCard.append(backFace);
 				eventTemplate.append(eventCard);
 			});
+		}
+		else{
+			let noEvents = document.createElement('div');
+			noEvents.classList.add('no-event');
+			let noEventClass = "fa-regular fa-calendar-xmark";
+			let noEventIcon =document.createElement('i');
+			noEventIcon.classList.add(...noEventClass.split(' '));
+			let p3 =document.createElement('p');
+			p3.append('No Upcoming Events');
+			noEvents.append(noEventIcon);
+			noEvents.append(p3);
+			eventTemplate.append(noEvents);
+		}
 			document.body.append(eventTemplate);
 		}
 

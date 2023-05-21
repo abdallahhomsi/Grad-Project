@@ -314,3 +314,23 @@ body {
 	border-radius: 5px;
 	cursor: pointer;
 }
+
+.front .event-details {
+	font-weight: 600;
+	/* position: absolute; */
+	/* bottom: 25px; */
+	order: 10;
+	margin-top: 30px;
+}
+
+.events .no-event {
+	display: flex;
+	flex-direction: column;
+	/* justify-content: center; */
+	align-items: center;
+	margin-top: 200px;
+}
+
+.events .no-event p {}
+
+.events .no-event i {}
