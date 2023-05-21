@@ -13,22 +13,29 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
 </head>
-<style>
 
+<style>
 	* {
 		padding: 0;
 		margin: 0;
 		box-sizing: border-box;
 	}
+
 	body {
 		font-family: 'Open Sans', sans-serif;
 		background-color: transparent;
 		color: unset;
+
+		padding-top: var(--section-padding);
+		padding-bottom: var(--section-padding);
 	}
 
 	:root {
-		--mainColor: #018785;
-		--postColor: #e6e6e642;
+		--section-padding: 100px;
+		--main-color: #228e9e;
+		--main-background-image: linear-gradient(to bottom, #228e9e, #134850);
+		--main-border-radius: 10px;
+		--main-background-color: #f0f2f5;
 	}
 
 	.container {
@@ -46,12 +53,20 @@
 
 	.header {
 		position: fixed;
-		position: relative;
+		left: 0;
 		width: 100%;
+		top: 0;
+		z-index: 9999;
+
+		background-color: white;
+		box-shadow: 0px 0px 10px var(--main-color), 0px 5px 5px white;
+
 		display: flex;
 		justify-content: space-between;
-		padding: 0px 40px 0px 20px;
-		box-shadow: 0px -1px 5px black;
+		align-items: center;
+		flex-wrap: wrap;
+
+		padding: 0px 20px;
 	}
 
 	.header .logo {
@@ -65,13 +80,18 @@
 	}
 
 	.header .logo h3 {
-		color: var(--mainColor);
+		color: var(--main-color);
 	}
 
-	.header .links {}
+	.header .links {
+		flex: 1 1;
+		display: flex;
+	}
 
 	.header .links .nav-links {
+		flex: 1;
 		display: flex;
+		justify-content: space-evenly;
 		list-style-type: none;
 		align-items: center;
 		height: 100%;
@@ -82,7 +102,6 @@
 		list-style-type: none;
 		align-items: center;
 		height: 100%;
-		margin-left: 30px;
 		cursor: pointer;
 		color: black;
 	}
@@ -93,7 +112,45 @@
 
 	.header .links .nav-links li.active,
 	.header .links .nav-links li:hover {
-		color: var(--mainColor);
+		color: var(--main-color);
+	}
+
+	@media (max-width:767px) {
+		.header h3 {
+			font-size: 13px;
+		}
+
+		/* .header .links {
+			display: none;
+
+			position: absolute;
+			top: 100%;
+			left: 0;
+			width: 100%;
+			padding: 10px 5px;
+
+			background-color: #ffffffd9;
+			box-shadow: 0 0 10px var(--main-color);
+		} */
+
+		.header .menu {
+			display: block;
+			position: absolute;
+			float: right;
+			right: 115px;
+		}
+
+		.header .links li {
+			font-size: 16px;
+		}
+
+		.popup-overlay .popup-content label {
+			text-align: center;
+		}
+
+		.popup-overlay .popup-content p {
+			text-align: center;
+		}
 	}
 
 	.header .links .nav-links li.request {
@@ -115,9 +172,11 @@
 	}
 
 	.post {
-		padding: 5px 20px;
-		background-color: var(--postColor);
 		position: relative;
+		padding: 5px 20px;
+		background-color: white;
+		border-radius: var(--main-border-radius);
+		box-shadow: 1px 1px 10px black;
 	}
 
 	.post .option {
@@ -135,22 +194,29 @@
 
 	.post .option i {
 		font-size: 30px;
-    background-color: green;
-    color: white;
-    display: flex;
-    align-items: center;
-    border-radius: 5px;
-    padding: 5px;
+		color: white;
+		display: flex;
+		align-items: center;
+		border-radius: var(--main-border-radius);
+		padding: 5px;
 	}
-	.post .option i span{
-		font-size: 15px;
-   		margin-left: 5px;
+
+	.post .option i:first-child {
+		background-color: var(--main-color);
+		background-image: var(--main-background-image);
 	}
+
 	.post .option i:last-child {
-		background-color: red;
+		background-color: #aaa;
 	}
+
+	.post .option i span {
+		font-size: 15px;
+		margin-left: 5px;
+	}
+
 	.post .option:hover {
-		color: var(--mainColor);
+		color: var(--main-color);
 	}
 
 	.profile-data {
@@ -189,7 +255,7 @@
 	}
 
 	.post-data::selection {
-		color: var(--mainColor);
+		color: var(--main-color);
 	}
 
 	.post-data .title {
@@ -197,7 +263,7 @@
 	}
 
 	.post-data .title::selection {
-		color: var(--mainColor);
+		color: var(--main-color);
 	}
 
 	.post-data .post-image {
@@ -205,17 +271,16 @@
 		width: 100%;
 		margin-top: 20px;
 	}
+
 	.post .post-buttons {
 		display: flex;
-    justify-content: space-evenly;
-    border-top-style: solid;
-    border-top-color: #ddd;
-    border-top-width: 1px;
-    padding: 30px;
+		justify-content: space-evenly;
+		border-top-style: solid;
+		border-top-color: #ddd;
+		border-top-width: 1px;
+		padding: 30px;
 	}
-
 </style>
-
 
 <body>
 	<div class="header">

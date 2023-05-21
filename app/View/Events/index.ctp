@@ -34,28 +34,15 @@
 	</div>
 
 
-	<!-- <div class="events">
-		<div class="event">
-			<div class="front">
-				<h4 class="title">Orange Academy Session</h4>
-				<h3 class="Location">IT 204</h3>
-				<div class="start-time">20/5/2023</div>
-				<div class="end-time">20/5/2023</div>
-			</div>
-			<div class="back">
-				<p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Minima quis id, iure
-					alias
-					ex, totam voluptas corporis assumenda impedit commodi sapiente, nulla veniam aspernatur unde
-					delectus atque incidunt nihil vero!</p>
-			</div>
-		</div>
-	</div> -->
+
 	<script>
 		//variables
 		let eventsData = <?php echo $future_event; ?>;
 		let currentRole = <?php echo $userRole; ?>;
 		let currentUserRole = currentRole[0]['User']['role_id'];
 		let optionIconClass = "fa-solid fa-trash";
+		let requestIconClass = "fa-solid fa-clipboard-check";
+
 
 		//generate events:
 		generateEvents();
@@ -240,6 +227,12 @@
 				e.currentTarget.classList.toggle('active');
 			})
 			})
+		}
+
+
+		if(document.querySelector('.header .links .nav-links li.request'))
+		document.querySelector('.header .links .nav-links li.request').onclick = function(){
+			window.location.href = '/cakephp/Posts/request';
 		}
 
 		//To Navigte between pages:

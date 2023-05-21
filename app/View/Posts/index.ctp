@@ -1569,7 +1569,7 @@
 		};
 
 		document.querySelector('.popup-overlay .popup-content form input[type="submit"]').addEventListener('click',(e)=>{
-			e.preventDefault();
+				e.preventDefault();
 				const form = document.querySelector('.popup-overlay .popup-content form ');
 				const title = form.querySelector('input[type="text"]').value;
 				const content = form.querySelector('textarea').value;
