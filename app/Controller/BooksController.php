@@ -32,9 +32,14 @@ class BooksController extends AppController
 			'recursive' => -1,
 			'conditions' => ['status' => 1]
 		]);
+		$requested = $this->Book->find('all', [
+			'recursive' => -1,
+			'conditions' => ['status' => 3]
+		]);
 		$this->set('pendingPosts', json_encode($pending));
 		$this->set('numberOfRequests', json_encode($sum));
 		$this->set('userRole', json_encode($currentRole));
+		$this->set('requested', json_encode($requested));
 	}
 
 	public function requestedbooks()

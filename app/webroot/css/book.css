@@ -156,7 +156,12 @@ body {
 	color: #333;
 }
 
-.menu .your-books {
+
+.side img {
+	width: 50%;
+}
+
+/* .menu .your-books {
 	height: 300px;
 	width: 300px;
 	display: flex;
@@ -177,7 +182,7 @@ body {
 
 .menu .your-books i {
 	font-size: 40px;
-}
+} */
 
 .index-buttons {
 	display: flex;
@@ -419,6 +424,77 @@ body {
 	right: -55px;
 	top: -50px;
 	cursor: pointer;
+}
+
+.borrow-container {
+	width: 50%;
+	top: 50px;
+	left: 0px;
+	padding: 20px;
+	position: absolute;
+}
+
+.borrow-container .borrowed-book {
+	background-color: var(--main-color);
+	margin-top: 10px;
+	position: relative;
+	border-radius: 10px;
+	padding: 5px 10px;
+}
+
+.borrow-container .borrowed-book img {
+	height: 80px;
+	width: 60px;
+	/* position: absolute; */
+}
+
+.borrow-container .borrowed-book h3 {
+	color: white;
+	position: absolute;
+	left: 25%;
+	top: 12px;
+	font-weight: normal;
+}
+
+.borrow-container .borrowed-book p {
+	color: white;
+	position: absolute;
+	left: 24%;
+	bottom: 10px;
+}
+
+.borrowed-book .accept-borrow {
+	background-color: green;
+	width: fit-content;
+	color: white;
+	padding: 5px 10px;
+	border-radius: 20px;
+	border: 1px solid white;
+	position: absolute;
+	right: 5px;
+	top: 15px;
+	cursor: pointer;
+}
+
+.borrowed-book .reject-borrow {
+	background-color: #ec5e5e;
+	width: fit-content;
+	color: white;
+	padding: 3px 11px;
+	border-radius: 20px;
+	border: 1px solid white;
+	position: absolute;
+	right: 5px;
+	bottom: 15px;
+	-ms-cursor: pointer;
+	cursor: pointer;
+}
+
+.borrowed-book .request-date {
+    color: #333;
+    position: absolute;
+    left: 179px;
+    top: 15px;
 }
 
 .donate-container {

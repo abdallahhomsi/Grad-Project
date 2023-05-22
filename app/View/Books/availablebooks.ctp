@@ -52,6 +52,7 @@
 		booksData.forEach(el=>{
 			let book =document.createElement('div');
 			book.classList.add('book');
+			book.dataset.id = el.Book.id;
 			let bookFront =document.createElement('div');
 			bookFront.classList.add('front');
 			let availableImage =document.createElement('div');
@@ -108,6 +109,19 @@
 				}
 			}
 			xhr.send(form);
+		}
+		else if(e.target.classList.contains('request-book')){
+			let bookID = e.target.parentElement.parentElement.dataset.id;
+			let obj = new Object();
+			obj.id= bookID;
+			let req = new XMLHttpRequest();
+			req.open('POST','/cakephp/Books/makerequest');
+			req.onreadystatechange = function(){
+				if(this.readyState===4 && this.status===200){
+					window.location.href = '/cakephp/Books/index';
+				}
+			}
+			req.send(JSON.stringify(obj));
 		}
 	})
 	if(document.querySelector('.books-gallery .book')){

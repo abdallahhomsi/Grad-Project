@@ -33,13 +33,12 @@
 		</div>
 	</div>
 	<div class="menu">
+		<div class="side">
+				<img src="/cakephp/app/webroot/img/logo.png" alt="">
+		</div>
 		<div class="available">
 			<i class="fa-solid fa-magnifying-glass"></i>
 			<p>Available Books</p>
-		</div>
-		<div class="your-books">
-			<i class="fa-solid fa-circle-check"></i>
-			<p>Your Books</p>
 		</div>
 	</div>
 </body>
@@ -49,7 +48,7 @@
 	let currentUser = <?php echo $this->session->read('User.id');?>;
 	let currentRole = <?php echo $userRole; ?>;
 	let pendingPosts = <?php echo $pendingPosts; ?>;
-
+	let requestedBooks = <?php echo $requested; ?>;
 
 	let currentUserRole = currentRole[0]['User']['role_id'];
 	indexButtons.classList.add('index-buttons');
@@ -67,7 +66,6 @@
 }
 
 	document.querySelector('.menu .available').onclick = function(){window.location.href = '/cakephp/Books/availablebooks'};
-	document.querySelector('.menu .your-books').onclick = function(){window.location.href = '/cakephp/Books/yourbooks'};
 
 	//Elements not exist:
 	document.addEventListener('click',(e)=>{
@@ -97,6 +95,32 @@
 			req.onreadystatechange =function(){
 				if(this.readyState===4 && this.status===200){
 					window.location.href = '/cakephp/Books/index';
+				}
+			}
+			req.send(JSON.stringify(obj));
+		}
+		else if(e.target.classList.contains('accept-borrow')){
+			let bookID = e.target.parentElement.dataset.id;
+			let obj = new Object();
+			obj.id = bookID;
+			let req = new XMLHttpRequest();
+			req.open('POST','/cakephp/Books/adddeclined');
+			req.onreadystatechange = function(){
+				if(this.status===200 && this.readyState===4){
+					window.location.href = '/cakephp/Books/index';
+				}
+			}
+			req.send(JSON.stringify(obj));
+		}
+		else if(e.target.classList.contains('reject-borrow')){
+			let bookID = e.target.parentElement.dataset.id;
+			let obj = new Object();
+			obj.id = bookID;
+			let req = new XMLHttpRequest();
+			req.open('POST','/cakephp/Books/addapproved');
+			req.onreadystatechange = function(){
+				if(this.status===200 && this.readyState===4){
+					window.location.href = '/cakephp/Books/availablebooks';
 				}
 			}
 			req.send(JSON.stringify(obj));
@@ -134,7 +158,34 @@
 
 			let borrowContainer =document.createElement('div');
 			borrowContainer.classList.add('borrow-container');
-
+		requestedBooks.forEach(el=>{
+				let borrowed =document.createElement('div');
+				borrowed.classList.add('borrowed-book');
+				let image =document.createElement('img');
+				image.src = `/cakephp/app/webroot/img/${el.Book.pic_path}`;
+				let name =document.createElement('h3');
+				name.append(el.Book.name);
+				let username =document.createElement('p');
+				let date =document.createElement('div');
+				date.classList.add('request-date');
+				date.append(el.Book.requested_date);
+				username.append(`by: ${el.Book.username}`);
+				borrowed.dataset.id = el.Book.id;
+				borrowed.append(image);
+				borrowed.append(name);
+				borrowed.append(date);
+				borrowed.append(username);
+				let acceptButton =document.createElement('div');
+				acceptButton.classList.add('accept-borrow');
+				acceptButton.append('Accept');
+				let rejectButton =document.createElement('div');
+				rejectButton.classList.add('reject-borrow');
+				rejectButton.append('Reject');
+				borrowed.append(acceptButton);
+				borrowed.append(rejectButton);
+				borrowContainer.append(borrowed);
+			})
+			requestsContent.append(borrowContainer);
 
 			let donateContainer =document.createElement('div');
 			donateContainer.classList.add('donate-container');
@@ -165,6 +216,7 @@
 			requestsContent.append(donateContainer);
 			document.body.append(requestsContent);
 	}
+
 
 //Navigate
 	document.querySelectorAll('.header .links .nav-links li').forEach(el => {
