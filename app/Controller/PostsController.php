@@ -33,7 +33,7 @@ class PostsController extends AppController
 			'all',
 			[
 				'recursive' => -1,
-				'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.id', 'User.username', 'User.role_id', 'Group.name', 'Group.id', 'PostCounter.id'],
+				'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.id', 'User.username', 'User.role_id', 'User.pic_path', 'Group.name', 'Group.id', 'PostCounter.id'],
 				'conditions' => ['Post.group_id' => $temp, 'Post.approved' => 1],
 				'order' => 'Post.id DESC',
 				'joins' => [
@@ -430,7 +430,7 @@ class PostsController extends AppController
 				'all',
 				[
 					'recursive' => -1,
-					'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.id', 'User.username', 'User.role_id', 'Group.name', 'PostCounter.id'],
+					'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.id', 'User.username', 'User.role_id', 'User.pic_path', 'Group.name', 'PostCounter.id'],
 					'conditions' => ['Post.group_id' => $temp, 'Post.approved' => 0],
 					'order' => 'Post.id DESC',
 					'joins' => [
@@ -503,7 +503,7 @@ class PostsController extends AppController
 			'all',
 			[
 				'recursive' => -1,
-				'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.id', 'User.username', 'User.role_id', 'Group.name', 'Group.id', 'PostCounter.id'],
+				'fields' => ['Post.title', 'Post.body', 'Post.id', 'Post.likes', 'Post.pic_path', 'User.id', 'User.username', 'User.role_id', 'User.pic_path', 'Group.name', 'Group.id', 'PostCounter.id'],
 				'conditions' => ['Post.group_id' => $temp, 'Post.approved' => 1],
 				'order' => 'Post.id DESC',
 				'joins' => [

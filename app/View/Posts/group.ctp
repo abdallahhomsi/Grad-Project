@@ -1952,6 +1952,9 @@ position: fixed;
 			}
 
 			profileData.classList.add('profile-data');
+			if(userData.User.pic_path !== undefined)
+			profileImage.src =  (`/cakephp/app/webroot/img/${userData.User.pic_path}`);
+			else
 			profileImage.src = `/cakephp/app/webroot/img/714.jpg`;
 			profileImage.alt = "User";
 			profileName.append(userData.User["username"]);
@@ -2655,7 +2658,8 @@ position: fixed;
 					window.location.href = '/cakephp/Books/index';
 				}
 				else if(e.currentTarget.classList.contains('profile')){
-					window.location.href = '/cakephp/Profiles/index';
+					localStorage.setItem('choosen-profile',sessionID);
+					window.location.href = '/cakephp/users/profile';
 				}
 				else if(e.currentTarget.classList.contains('home')){
 					window.location.href = '/cakephp/Posts/index';

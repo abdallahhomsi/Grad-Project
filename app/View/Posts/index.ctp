@@ -1130,7 +1130,10 @@
 			}
 
 			profileData.classList.add('profile-data');
-			profileImage.src = `/cakephp/app/webroot/img/714.jpg`;
+		if(userData.User.pic_path)
+		profileImage.src =  (`/cakephp/app/webroot/img/${userData.User.pic_path}` || `/cakephp/app/webroot/img/714.jpg` );
+		else
+		profileImage.src = `/cakephp/app/webroot/img/714.jpg`;
 			profileImage.alt = "User";
 			profileName.append(userData.User["username"]);
 			groupName.append(userData.Group.name);

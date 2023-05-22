@@ -246,6 +246,7 @@
 					window.location.href = '/cakephp/Books/index';
 				}
 				else if (e.currentTarget.classList.contains('profile')) {
+					localStorage.setItem('choosen-profile',sessionID);
 					window.location.href = '/cakephp/users/profile';
 				}
 				else if (e.currentTarget.classList.contains('home')) {

@@ -331,7 +331,10 @@
 		option.append(declineIcon);
 
 		profileData.classList.add('profile-data');
-		profileImage.src = ``;
+		if(userData.User.pic_path)
+		profileImage.src =  (`/cakephp/app/webroot/img/${userData.User.pic_path}` || `/cakephp/app/webroot/img/714.jpg` );
+		else
+		profileImage.src = `/cakephp/app/webroot/img/714.jpg`;
 		profileImage.alt = "User";
 		profileName.append(userData.User["username"]);
 		groupName.append(userData.Group.name);
@@ -427,6 +430,7 @@
 					window.location.href = '/cakephp/Books/index';
 				}
 				else if(e.currentTarget.classList.contains('profile')){
+					localStorage.setItem('choosen-profile',sessionID);
 					window.location.href = '/cakephp/users/profile';
 				}
 				else if(e.currentTarget.classList.contains('home')){
