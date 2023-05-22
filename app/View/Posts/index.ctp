@@ -254,6 +254,7 @@
 		vertical-align: top;
 		color: black;
 		font-weight: 600;
+		cursor:pointer;
 	}
 
 	.profile-data h6 {
@@ -1827,10 +1828,22 @@
 					window.location.href = '/cakephp/Books/index';
 				}
 				else if(e.currentTarget.classList.contains('profile')){
-					window.location.href = '/cakephp/Profile/index';
+					localStorage.setItem('choosen-profile',sessionID);
+					window.location.href = '/cakephp/users/profile';
 				}
 			})
 		})
+
+		//Move to profile:
+		if(document.querySelector('.post .profile-data h4')){
+			document.querySelectorAll('.post .profile-data h4').forEach(el=>{
+				el.addEventListener('click',(e)=>{
+					localStorage.setItem('choosen-profile',e.target.parentElement.parentElement.dataset.userid);
+					window.location.href='/cakephp/users/profile';
+				})
+			})
+		}
+
 	</script>
 </body>
 

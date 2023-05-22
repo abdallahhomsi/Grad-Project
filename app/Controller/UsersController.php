@@ -88,4 +88,132 @@ class UsersController extends AppController
 			unset($this->request->data['User']['new_password']);
 		}
 	}
+	public function profile()
+	{
+		if ($this->request->is('POST')) {
+			$this->autoRender = false;
+			$this->loadModel('Post');
+			$this->loadModel('Group');
+			$this->loadModel('UserRole');
+			$this->loadModel('UserList');
+			$data = json_decode(file_get_contents('php://input'), true);
+			$id = $data['id'];
+			$approved_count = $this->Post->find('first', [
+				'recursive' => -1,
+				'fields' => ['count(id)'],
+				'conditions' => ['user_id' => $id, 'approved' => 1],
+				'group' => 'approved'
+			]);
+			$number_of_posts = $approved_count[0]['count(id)'];
+			$approved_count1 = $this->Post->find('list', [
+				'recursive' => -1,
+				'fields' => ['likes'],
+				'conditions' => ['user_id' => $id, 'approved' => 1]
+			]);
+			$sum = 0;
+			foreach ($approved_count1 as $key => $val) {
+				$sum += $val;
+			}
+			if ($sum != 0)
+				$like_ratio = $number_of_posts / $sum;
+			else
+				$like_ratio = 0;
+			$group_options = $this->Group->find('all', [
+				'recursive' => -1,
+				'fields' => ['id', 'name']
+			]);
+			$groups_id = $this->UserRole->find(
+				'list',
+				[
+					'recursive' => -1,
+					'fields' => ['group_id'],
+					'conditions' => ['user_id' => $id]
+				]
+			);
+			$final = [];
+			//pr($group_options);die;
+			foreach ($group_options as $a) {
+				if (!empty(array_search($a['Group']['id'], $groups_id))) {
+					$final[$a['Group']['id']] = $a['Group']['name'];
+				}
+			}
+			$username = $this->User->find('first', [
+				'recursive' => -1,
+				'conditions' => ['id' => $id]
+			]);
+			$list_options = $this->UserList->find('all', [
+				'recursive' => -1,
+				'fields' => ['skill_name'],
+				'conditions' => ['user_id' => $id]
+			]);
+			$arr = [];
+			array_push($arr, $list_options);
+			array_push($arr, $sum);
+			array_push($arr, $final);
+			array_push($arr, $username);
+			array_push($arr, $number_of_posts);
+			array_push($arr, $like_ratio);
+
+			echo json_encode($arr);
+		}
+
+	}
+	public function addpic()
+	{
+		$this->autoRender = false;
+		$file = $_FILES['file'];
+		$lastSavedID = $this->User->find('first', [
+			'recursive' => -1,
+			'fields' => ['id'],
+			'order' => 'id DESC'
+		]);
+		if (empty($lastSavedID))
+			$lastSavedID['User']['id'] = 0;
+		$lastSavedID['User']['id']++;
+		$k = 'user' . $lastSavedID['User']['id'] . '.jpg';
+		$file['name'] = $k;
+		$allowedTypes = array('jpg');
+		$allowedSize = 1024 * 1024; // 1 MB
+		if (!in_array(pathinfo($file['name'], PATHINFO_EXTENSION), $allowedTypes)) {
+			$this->Flash->error(__('Invalid file type.'));
+		} else {
+			$temp = array(
+				'User' => array(
+					'id' => $this->Session->read('User.id'),
+					'pic_path' => $file['name'],
+				)
+			);
+		}
+		move_uploaded_file($file['tmp_name'], WWW_ROOT . 'img/' . $file['name']);
+		$this->User->create();
+		$this->User->save($temp);
+	}
+	public function addskill()
+	{
+		$this->autoRender = false;
+		$this->loadModel('UserList');
+		$data = json_decode(file_get_contents('php://input'), true);
+		$id = $this->Session->read('User.id');
+		$skill = $data['content'];
+		$t = [
+			'user_id' => $id,
+			'skill_name' => $skill
+		];
+		$this->UserList->create();
+		$this->UserList->save($t);
+	}
+	public function addmajor()
+	{
+		$this->autoRender = false;
+		$data = json_decode(file_get_contents('php://input'), true);
+		$major = $data['content'];
+		$temp = array(
+			'User' => array(
+				'id' => $this->Session->read('User.id'),
+				'major' => $major
+			)
+		);
+		$this->User->create();
+		$this->User->save($temp);
+	}
 }

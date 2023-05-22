@@ -2655,13 +2655,21 @@ position: fixed;
 					window.location.href = '/cakephp/Books/index';
 				}
 				else if(e.currentTarget.classList.contains('profile')){
-					window.location.href = '/cakephp/Profile/index';
+					window.location.href = '/cakephp/Profiles/index';
 				}
 				else if(e.currentTarget.classList.contains('home')){
 					window.location.href = '/cakephp/Posts/index';
 				}
 			})
 		})
+		if(document.querySelector('.post .profile-data h4')){
+			document.querySelectorAll('.post .profile-data h4').forEach(el=>{
+				el.addEventListener('click',(e)=>{
+					localStorage.setItem('choosen-profile',e.target.parentElement.parentElement.dataset.userid);
+					window.location.href='/cakephp/users/profile';
+				})
+			})
+		}
 	</script>
 </body>
 

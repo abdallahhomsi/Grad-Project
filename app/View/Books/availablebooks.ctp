@@ -180,7 +180,7 @@
 					window.location.href = '/cakephp/Books/index';
 				}
 				else if (e.currentTarget.classList.contains('profile')) {
-					window.location.href = '/cakephp/Profile/index';
+					window.location.href = '/cakephp/Profiles/index';
 				}
 				else if (e.currentTarget.classList.contains('home')) {
 					window.location.href = '/cakephp/Posts/index';
