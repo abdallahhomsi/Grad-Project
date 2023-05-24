@@ -166,6 +166,7 @@ body {
 
 .front .start-time {
 	position: relative;
+	margin-top: 20px;
 }
 
 .front .start-time::before {
@@ -178,6 +179,7 @@ body {
 
 .front .end-time {
 	position: relative;
+	margin-top: 20px;
 }
 
 .front .end-time::before {
@@ -321,6 +323,10 @@ body {
 	/* bottom: 25px; */
 	order: 10;
 	margin-top: 30px;
+	background-color: white;
+	color: var(--main-color);
+	padding: 5px;
+	border-radius: 20px;
 }
 
 .events .no-event {

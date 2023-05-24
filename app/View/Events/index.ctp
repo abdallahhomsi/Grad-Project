@@ -33,12 +33,186 @@
 		</div>
 	</div>
 
+	<style>
 
+	:root {
+		--error: "reqiured";
+		--emailError: "HU domain!";
+		--section-padding: 100px;
+		--main-color: #228e9e;
+		--main-background-image: linear-gradient(to bottom, #228e9e, #134850);
+		--main-border-radius: 5px;
+		--main-shadow: 1px 1px 5px black;
+	}
+
+	/* End Variables */
+
+	/* Start Global Rules */
+	* {
+		-webkit-box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		box-sizing: border-box;
+		padding: 0;
+		margin: 0;
+	}
+
+	html {
+		scroll-behavior: smooth;
+	}
+
+	body {
+		font-family: "Open Sans", sans-serif;
+		background-color: #f0f2f5;
+	}
+
+	.header .links .nav-links li.active,
+	.header .links .nav-links li:hover {
+		padding: 0;
+	}
+
+	.events {
+		display: flex;
+		justify-content: space-evenly;
+		flex-wrap: wrap;
+	}
+
+	.add-event-button {
+		width: 300px;
+		text-align: center;
+		background-image: var(--main-background-image);
+	}
+
+	.event {
+		width: 300px;
+		border-radius: var(--main-border-radius);
+		box-shadow: var(--main-shadow);
+		margin-right: 20px;
+	}
+
+	@media (max-width: 600px) {
+		.event {
+			width: 100%;
+		}
+	}
+
+	.event .back,
+	.event .front {
+		background-color: white;
+		color: black;
+		display: block;
+		text-align: center;
+	}
+
+	.front :not(:first-child) {
+		margin-bottom: 20px;
+	}
+
+	.front h4 {
+		font-weight: 500;
+		font-size: 30px;
+	}
+
+	.front .start-time::before {
+		content: "From:";
+		position: static;
+		left: 0;
+	}
+
+	.front .end-time::before {
+		content: "To:";
+		position: static;
+		left: 0;
+	}
+
+	.front .event-details {
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
+		bottom: 10px;
+
+		background-image: var(--main-background-image);
+		padding: 5px 10px;
+		border-radius: var(--main-border-radius);
+		color: white;
+	}
+
+	.back::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		background-color: white;
+		opacity: 0.6;
+		z-index: -1;
+		font-size: 20px;
+	}
+
+	.event .back,
+	.event .front p {
+		font-weight: 500;
+		font-size: 30px;
+	}
+
+	.event-content {
+		position: absolute;
+		height: 550px;
+		max-width: 400px;
+		background-color: white;
+		left: 50%;
+		top: 50%;
+		transform: translate(-50%, calc(-50% + 30px));
+		z-index: 1000;
+
+		border-radius: var(--main-border-radius);
+	}
+
+	@media (max-width: 768px) {
+		.popup-content {
+			max-width: 90%;
+		}
+	}
+
+	.event-content .buttons .confirm-event {
+		background-color: var(--main-color);
+		background-image: var(--main-background-image);
+		color: white;
+		padding: 5px 10px;
+		border-radius: var(--main-border-radius);
+		cursor: pointer;
+		font-weight: 600;
+		width: calc(50% - 10px);
+		text-align: center;
+	}
+
+	.event-content .buttons .cancel-event {
+		background-color: #aaa;
+		color: white;
+		padding: 5px 10px;
+		border-radius: var(--main-border-radius);
+		cursor: pointer;
+		font-weight: 600;
+		width: calc(50% - 10px);
+		text-align: center;
+	}
+
+	.event-content .buttons {
+		display: flex;
+		width: 100%;
+		margin: 0 auto;
+		justify-content: space-evenly;
+		align-items: center;
+		padding: 0 10px 20px;
+	}
+
+		</style>
 
 	<script>
 		//variables
 		let eventsData = <?php echo $future_event; ?>;
 		let currentRole = <?php echo $userRole; ?>;
+		let sessionID = <?php echo $this->session->read('User.id')?>;
 		let currentUserRole = currentRole[0]['User']['role_id'];
 		let optionIconClass = "fa-solid fa-trash";
 		let requestIconClass = "fa-solid fa-clipboard-check";
@@ -254,7 +428,6 @@
 				}
 			});
 		});
-
 
 	</script>
 </body>

@@ -35,6 +35,8 @@
 	<div class="menu">
 		<div class="side">
 				<img src="/cakephp/app/webroot/img/logo.png" alt="">
+				<h2>Safe Community</h2>
+				<p>Book Exchange</p>
 		</div>
 		<div class="available">
 			<i class="fa-solid fa-magnifying-glass"></i>
